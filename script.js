@@ -8,11 +8,8 @@ function saveCart() {
 
 function addToCart(id, qty = 1) {
   const existing = cart.find(i => i.id === id);
-  if (existing) {
-    existing.qty += qty;
-  } else {
-    cart.push({ id, qty });
-  }
+  if (existing) existing.qty += qty;
+  else cart.push({ id, qty });
   saveCart();
   showToast('به سبد خرید اضافه شد');
   bumpTotal();
@@ -59,30 +56,25 @@ function updateCartUI() {
   const container = document.getElementById('cartItems');
   if (!container) return;
   if (cart.length === 0) {
-    container.innerHTML = `
-      <div class="cart-empty">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-        <p>سبد خرید خالی است</p>
-      </div>`;
+    container.innerHTML = `<div class="cart-empty"><p>سبد خرید خالی است</p></div>`;
     return;
   }
   container.innerHTML = cart.map(item => {
     const p = products.find(pr => pr.id === item.id);
     if (!p) return '';
-    return `
-      <div class="cart-item">
-        <div class="cart-item-img">${p.image}</div>
-        <div class="cart-item-info">
-          <div class="cart-item-name">${p.name}</div>
-          <div class="cart-item-price">${formatPrice(p.price)}</div>
-          <div class="cart-item-actions">
-            <button class="qty-btn" onclick="changeQty(${p.id}, -1)">−</button>
-            <span class="qty-num">${item.qty}</span>
-            <button class="qty-btn" onclick="changeQty(${p.id}, 1)">+</button>
-            <button class="cart-item-remove" onclick="removeFromCart(${p.id})">حذف</button>
-          </div>
+    return `<div class="cart-item">
+      <div class="cart-item-img">${p.image}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${p.name}</div>
+        <div class="cart-item-price">${formatPrice(p.price)}</div>
+        <div class="cart-item-actions">
+          <button class="qty-btn" onclick="changeQty(${p.id}, -1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${p.id}, 1)">+</button>
+          <button class="cart-item-remove" onclick="removeFromCart(${p.id})">حذف</button>
         </div>
-      </div>`;
+      </div>
+    </div>`;
   }).join('');
 }
 
@@ -126,27 +118,23 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
 function productCardHTML(p) {
   const badgeClass = p.badge === 'جدید' ? 'new' : '';
   const badgeHTML = p.badge ? `<span class="product-badge ${badgeClass}">${p.badge}</span>` : '';
-  return `
-    <div class="product-card" onclick="openModal(${p.id})">
-      <div class="product-img-wrap">
-        <div class="product-img">${p.image}</div>
-        ${badgeHTML}
+  return `<div class="product-card" onclick="openModal(${p.id})">
+    <div class="product-img-wrap"><div class="product-img">${p.image}</div>${badgeHTML}</div>
+    <div class="product-body">
+      <div class="product-cat">${p.category}</div>
+      <div class="product-name">${p.name}</div>
+      <div class="product-footer">
+        <div class="product-price">${formatPrice(p.price)}</div>
+        <button class="btn-add" onclick="event.stopPropagation(); addToCart(${p.id})">+</button>
       </div>
-      <div class="product-body">
-        <div class="product-cat">${p.category}</div>
-        <div class="product-name">${p.name}</div>
-        <div class="product-footer">
-          <div class="product-price">${formatPrice(p.price)}</div>
-          <button class="btn-add" onclick="event.stopPropagation(); addToCart(${p.id})">+</button>
-        </div>
-      </div>
-    </div>`;
+    </div>
+  </div>`;
 }
 
 function openModal(id) {
@@ -182,12 +170,12 @@ function renderCategories() {
   const icons = { 'پوشاک': '👗', 'کفش': '👟', 'الکترونیک': '🎧', 'اکسسوری': '👜', 'زیبایی': '💄' };
   const el = document.getElementById('categoryGrid');
   if (!el) return;
-  const cats = categories.filter(c => c !== 'همه');
-  el.innerHTML = cats.map(c => `
-    <a href="products.html?cat=${encodeURIComponent(c)}" class="cat-card">
+  el.innerHTML = categories.filter(c => c !== 'همه').map(c =>
+    `<a href="products.html?cat=${encodeURIComponent(c)}" class="cat-card">
       <div class="cat-icon">${icons[c] || '📦'}</div>
       <div class="cat-name">${c}</div>
-    </a>`).join('');
+    </a>`
+  ).join('');
 }
 
 let activeCategory = 'همه';
@@ -214,9 +202,7 @@ function initProductsPage() {
 
 function setFilter(cat) {
   activeCategory = cat;
-  document.querySelectorAll('.filter-btn').forEach(b => {
-    b.classList.toggle('active', b.textContent === cat);
-  });
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.textContent === cat));
   applyFilters();
 }
 
@@ -225,9 +211,7 @@ function applyFilters() {
   if (activeCategory !== 'همه') list = list.filter(p => p.category === activeCategory);
   if (searchQuery) {
     list = list.filter(p =>
-      p.name.includes(searchQuery) ||
-      p.category.includes(searchQuery) ||
-      p.description.includes(searchQuery)
+      p.name.includes(searchQuery) || p.category.includes(searchQuery) || p.description.includes(searchQuery)
     );
   }
   renderProducts(list, 'productsGrid');
@@ -238,20 +222,17 @@ function initCollectionsPage() {
   if (!el) return;
   el.innerHTML = collections.map((col, i) => {
     const prods = col.products.map(id => products.find(p => p.id === id)).filter(Boolean);
-    return `
-      <div class="collection-card">
-        <div class="collection-hero theme-${i + 1}">
-          <div class="collection-icon">${col.icon}</div>
-          <div>
-            <h2>${col.title}</h2>
-            <div class="sub">${col.subtitle}</div>
-            <p>${col.description}</p>
-          </div>
+    return `<div class="collection-card">
+      <div class="collection-hero theme-${i + 1}">
+        <div class="collection-icon">${col.icon}</div>
+        <div>
+          <h2>${col.title}</h2>
+          <div class="sub">${col.subtitle}</div>
+          <p>${col.description}</p>
         </div>
-        <div class="collection-products">
-          <div class="product-grid">${prods.map(productCardHTML).join('')}</div>
-        </div>
-      </div>`;
+      </div>
+      <div class="collection-products"><div class="product-grid">${prods.map(productCardHTML).join('')}</div></div>
+    </div>`;
   }).join('');
 }
 
@@ -261,151 +242,154 @@ function handleContact(e) {
   e.target.reset();
 }
 
-/* ========== PRICE CALCULATOR + TGJU ========== */
-// نرخ دلار آزاد از tgju.org — واحد نمایش: تومان
-// TGJU قیمت را به ریال می‌دهد → تقسیم بر ۱۰ = تومان
-let usdRate = 192620; // fallback تقریبی تومان (بر اساس آخرین نرخ مشاهده‌شده)
+/* ========== LIVE USD RATE (بازار آزاد) ========== */
+// حداقل منطقی برای دلار آزاد ۱۴۰۵ ≈ بالای ۱۰۰٬۰۰۰ تومان
+const MIN_VALID_TOMAN = 100000;
+let usdRate = 193500; // fallback روز
 
 const TARIFF = {
-  default: 0.12,
-  amazon: 0.15,
-  shein: 0.10,
-  zara: 0.12,
-  lcw: 0.10,
-  boyner: 0.12,
-  koton: 0.10,
-  defacto: 0.10,
-  namshi: 0.12,
-  noon: 0.12,
-  trendyol: 0.10
+  default: 0.12, amazon: 0.15, shein: 0.10, zara: 0.12, lcw: 0.10,
+  boyner: 0.12, koton: 0.10, defacto: 0.10, namshi: 0.12, noon: 0.12, trendyol: 0.10
 };
-
 const SHIPPING_BASE = 350000;
 const SHIPPING_PER_KG = 280000;
 const SERVICE_FEE_RATE = 0.05;
 const SERVICE_FEE_MIN = 150000;
 
-function parseRialToToman(raw) {
-  if (raw == null) return null;
-  const digits = String(raw).replace(/[^\d]/g, '');
-  if (!digits) return null;
-  const rial = parseInt(digits, 10);
-  if (!rial || rial < 1000) return null;
-  return Math.round(rial / 10); // ریال → تومان
+function clearBadCache() {
+  const old = Number(localStorage.getItem('usd_free_rate') || 0);
+  if (old && old < MIN_VALID_TOMAN) {
+    localStorage.removeItem('usd_free_rate');
+    localStorage.removeItem('usd_rate_source');
+  }
 }
 
-function applyUsdRate(toman, sourceLabel) {
-  if (!toman || toman < 1000) return false;
+function applyUsdRate(toman, source) {
+  toman = Math.round(Number(toman));
+  if (!toman || toman < MIN_VALID_TOMAN) return false;
   usdRate = toman;
   localStorage.setItem('usd_free_rate', String(toman));
-  localStorage.setItem('usd_rate_source', sourceLabel || 'tgju');
+  localStorage.setItem('usd_rate_source', source || '');
   localStorage.setItem('usd_rate_time', new Date().toISOString());
   const el = document.getElementById('usdRateDisplay');
   if (el) {
-    el.innerHTML = Math.round(usdRate).toLocaleString('fa-IR') + ' تومان'
-      + ' <small style="color:#86868b;font-weight:400">(tgju.org)</small>';
+    const src = source ? ` <small style="color:#86868b;font-weight:400">(${source})</small>` : '';
+    el.innerHTML = toman.toLocaleString('fa-IR') + ' تومان' + src;
   }
   return true;
 }
 
-async function fetchViaProxy(url) {
+function parseRialToToman(raw) {
+  const digits = String(raw).replace(/[^\d]/g, '');
+  if (!digits) return null;
+  const n = parseInt(digits, 10);
+  if (!n) return null;
+  // اگر عدد خیلی بزرگ بود (ریال) تبدیل به تومان
+  if (n > 500000) return Math.round(n / 10);
+  return n;
+}
+
+async function fetchJson(url) {
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error('http ' + res.status);
+  return res.json();
+}
+
+async function fetchTextProxy(url) {
   const proxies = [
-    (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
-    (u) => 'https://corsproxy.io/?' + encodeURIComponent(u),
-    (u) => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u)
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+    'https://corsproxy.io/?' + encodeURIComponent(url)
   ];
-  for (const make of proxies) {
+  for (const p of proxies) {
     try {
-      const res = await fetch(make(url), { cache: 'no-store' });
-      if (!res.ok) continue;
-      return await res.text();
-    } catch (e) {
-      continue;
-    }
+      const res = await fetch(p, { cache: 'no-store' });
+      if (res.ok) return await res.text();
+    } catch (e) {}
   }
   return null;
 }
 
-async function fetchUsdRateFromTgjuAjax() {
-  // API لحظه‌ای TGJU: call5.tgju.org/ajax.json
-  const ts = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
-  const ajaxUrl = 'https://call5.tgju.org/ajax.json?' + ts + '-live';
+// ۱) منبع پایدار بدون CORS — نرخ تومان بازار آزاد
+async function fetchFromNavasan() {
+  const urls = [
+    'https://raw.githubusercontent.com/HosseinOdd/Navasan-API/main/data/fiat.json',
+    'https://cdn.jsdelivr.net/gh/HosseinOdd/Navasan-API@main/data/fiat.json'
+  ];
+  for (const url of urls) {
+    try {
+      const data = await fetchJson(url);
+      const v = data && data.usd && data.usd.value;
+      if (v && Number(v) >= MIN_VALID_TOMAN) return { rate: Number(v), source: 'بازار آزاد' };
+    } catch (e) {}
+  }
+  return null;
+}
+
+// ۲) TGJU ajax
+async function fetchFromTgjuAjax() {
+  const ts = Date.now();
+  const ajaxUrl = 'https://call5.tgju.org/ajax.json?t=' + ts;
   try {
-    // مستقیم
     let data = null;
     try {
-      const res = await fetch(ajaxUrl, { cache: 'no-store' });
-      if (res.ok) data = await res.json();
-    } catch (e) {}
-
-    // از طریق پروکسی
-    if (!data) {
-      const text = await fetchViaProxy(ajaxUrl);
+      data = await fetchJson(ajaxUrl);
+    } catch (e) {
+      const text = await fetchTextProxy(ajaxUrl);
       if (text) data = JSON.parse(text);
     }
-
-    if (data && data.current && data.current.price_dollar_rl) {
-      const p = data.current.price_dollar_rl.p;
-      const toman = parseRialToToman(p);
-      if (toman) return toman;
-    }
+    const p = data && data.current && data.current.price_dollar_rl && data.current.price_dollar_rl.p;
+    const toman = parseRialToToman(p);
+    if (toman && toman >= MIN_VALID_TOMAN) return { rate: toman, source: 'tgju.org' };
   } catch (e) {}
   return null;
 }
 
-async function fetchUsdRateFromTgjuPage() {
-  // پارس صفحه https://www.tgju.org/profile/price_dollar_rl
-  const pageUrl = 'https://www.tgju.org/profile/price_dollar_rl';
-  const html = await fetchViaProxy(pageUrl);
+// ۳) صفحه TGJU
+async function fetchFromTgjuPage() {
+  const html = await fetchTextProxy('https://www.tgju.org/profile/price_dollar_rl');
   if (!html) return null;
-
-  // الگوهای رایج قیمت در صفحه TGJU (ریال)
   const patterns = [
     /data-col=["']info\.last_trade\.PDrCotVal["'][^>]*>([\d,]+)/i,
-    /نرخ فعلی[:\s]*([\d,]+)/,
-    /price_dollar_rl[\s\S]{0,200}?([\d]{1,3}(?:,\d{3}){2,})/,
-    /class=["'][^"']*value[^"']*["'][^>]*>\s*([\d,]+)/i
+    /نرخ فعلی[:\s]*([\d,]{6,})/,
+    /([\d]{1,3}(?:,\d{3}){2,})/
   ];
-
   for (const re of patterns) {
     const m = html.match(re);
-    if (m && m[1]) {
+    if (m) {
       const toman = parseRialToToman(m[1]);
-      // دلار آزاد معمولاً بالای ~50 هزار تومان است
-      if (toman && toman > 50000) return toman;
+      if (toman && toman >= MIN_VALID_TOMAN) return { rate: toman, source: 'tgju.org' };
     }
   }
   return null;
 }
 
 async function fetchUsdRate() {
+  clearBadCache();
   const el = document.getElementById('usdRateDisplay');
-  if (el) el.textContent = 'در حال دریافت از tgju.org...';
+  if (el) el.textContent = 'در حال دریافت نرخ لحظه‌ای...';
 
-  // ۱) API لحظه‌ای TGJU
-  let toman = await fetchUsdRateFromTgjuAjax();
-
-  // ۲) پارس صفحه پروفایل دلار
-  if (!toman) toman = await fetchUsdRateFromTgjuPage();
-
-  // ۳) کش قبلی
-  if (!toman) {
-    const stored = localStorage.getItem('usd_free_rate');
-    if (stored && Number(stored) > 50000) toman = Number(stored);
+  const sources = [fetchFromNavasan, fetchFromTgjuAjax, fetchFromTgjuPage];
+  for (const fn of sources) {
+    try {
+      const result = await fn();
+      if (result && applyUsdRate(result.rate, result.source)) {
+        showToast('نرخ دلار بروزرسانی شد: ' + result.rate.toLocaleString('fa-IR') + ' تومان');
+        return;
+      }
+    } catch (e) {}
   }
 
-  if (toman && applyUsdRate(toman, 'tgju')) {
-    showToast('نرخ دلار از tgju.org بروزرسانی شد');
-    return;
-  }
+  // کش معتبر
+  const cached = Number(localStorage.getItem('usd_free_rate') || 0);
+  if (cached >= MIN_VALID_TOMAN && applyUsdRate(cached, 'ذخیره محلی')) return;
 
-  // ۴) fallback
-  if (el) el.textContent = Math.round(usdRate).toLocaleString('fa-IR') + ' تومان (ذخیره‌شده)';
-  showToast('اتصال به tgju برقرار نشد — از نرخ قبلی استفاده شد');
+  // آخرین fallback معقول
+  applyUsdRate(193500, 'پیش‌فرض');
+  showToast('نرخ آنلاین در دسترس نبود — از نرخ پیش‌فرض استفاده شد');
 }
 
 function setUsdRate(rate) {
-  applyUsdRate(rate, 'manual');
+  applyUsdRate(rate, 'دستی');
 }
 
 function calculatePrice() {
@@ -414,21 +398,14 @@ function calculatePrice() {
   const store = document.getElementById('calcStore').value;
   const link = document.getElementById('calcLink').value.trim();
 
-  if (!price || price <= 0) {
-    showToast('قیمت کالا را وارد کنید');
-    return;
-  }
-  if (!weight || weight <= 0) {
-    showToast('وزن کالا را وارد کنید');
-    return;
-  }
+  if (!price || price <= 0) { showToast('قیمت کالا را وارد کنید'); return; }
+  if (!weight || weight <= 0) { showToast('وزن کالا را وارد کنید'); return; }
 
   const productToman = price * usdRate;
-  const shipping = SHIPPING_BASE + (weight * SHIPPING_PER_KG);
+  const shipping = SHIPPING_BASE + weight * SHIPPING_PER_KG;
   const tariffRate = TARIFF[store] || TARIFF.default;
   const tariff = productToman * tariffRate;
-  let fee = productToman * SERVICE_FEE_RATE;
-  if (fee < SERVICE_FEE_MIN) fee = SERVICE_FEE_MIN;
+  let fee = Math.max(productToman * SERVICE_FEE_RATE, SERVICE_FEE_MIN);
   const total = productToman + shipping + tariff + fee;
 
   document.getElementById('rProduct').textContent = formatPrice(productToman);
@@ -436,9 +413,8 @@ function calculatePrice() {
   document.getElementById('rTariff').textContent = formatPrice(tariff) + ` (${Math.round(tariffRate * 100)}٪)`;
   document.getElementById('rFee').textContent = formatPrice(fee);
   document.getElementById('rTotal').textContent = formatPrice(total);
-
-  const note = document.getElementById('calcNote');
-  note.textContent = 'نرخ دلار از tgju.org (دلار آزاد). مبلغ تقریبی است و پس از بررسی نهایی ممکن است کمی تغییر کند.'
+  document.getElementById('calcNote').textContent =
+    'محاسبه با نرخ دلار آزاد لحظه‌ای (' + usdRate.toLocaleString('fa-IR') + ' تومان). مبلغ تقریبی است.'
     + (link ? ' لینک محصول ثبت شد.' : '');
 
   document.getElementById('calcResult').hidden = false;
@@ -447,6 +423,7 @@ function calculatePrice() {
 
 /* ========== INIT ========== */
 document.addEventListener('DOMContentLoaded', () => {
+  clearBadCache();
   updateCartUI();
 
   const page = document.body.dataset.page;
@@ -454,8 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCategories();
     renderFeatured();
     fetchUsdRate();
-    // بروزرسانی خودکار هر ۵ دقیقه
-    setInterval(fetchUsdRate, 5 * 60 * 1000);
+    setInterval(fetchUsdRate, 3 * 60 * 1000); // هر ۳ دقیقه
   } else if (page === 'products') {
     initProductsPage();
   } else if (page === 'collections') {
@@ -472,9 +448,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      closeModal();
-      closeCart();
-    }
+    if (e.key === 'Escape') { closeModal(); closeCart(); }
   });
 });
