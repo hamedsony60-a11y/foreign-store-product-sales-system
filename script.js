@@ -47,7 +47,6 @@ function formatPrice(n) {
   return Math.round(n).toLocaleString('fa-IR') + ' تومان';
 }
 
-/* ========== UI UPDATES ========== */
 function updateCartUI() {
   const count = getCartCount();
   const badge = document.getElementById('cartCount');
@@ -55,13 +54,10 @@ function updateCartUI() {
     badge.textContent = count;
     badge.classList.toggle('show', count > 0);
   }
-
   const totalEl = document.getElementById('cartTotal');
   if (totalEl) totalEl.textContent = formatPrice(getCartTotal());
-
   const container = document.getElementById('cartItems');
   if (!container) return;
-
   if (cart.length === 0) {
     container.innerHTML = `
       <div class="cart-empty">
@@ -70,7 +66,6 @@ function updateCartUI() {
       </div>`;
     return;
   }
-
   container.innerHTML = cart.map(item => {
     const p = products.find(pr => pr.id === item.id);
     if (!p) return '';
@@ -266,11 +261,12 @@ function handleContact(e) {
   e.target.reset();
 }
 
-/* ========== PRICE CALCULATOR ========== */
-let usdRate = 920000; // fallback تومان
+/* ========== PRICE CALCULATOR + TGJU ========== */
+// نرخ دلار آزاد از tgju.org — واحد نمایش: تومان
+// TGJU قیمت را به ریال می‌دهد → تقسیم بر ۱۰ = تومان
+let usdRate = 192620; // fallback تقریبی تومان (بر اساس آخرین نرخ مشاهده‌شده)
 
 const TARIFF = {
-  // درصد تقریبی تعرفه + ارزش افزوده (نمونه)
   default: 0.12,
   amazon: 0.15,
   shein: 0.10,
@@ -284,52 +280,132 @@ const TARIFF = {
   trendyol: 0.10
 };
 
-// حمل: پایه + به ازای هر کیلو
-const SHIPPING_BASE = 350000; // تومان
-const SHIPPING_PER_KG = 280000; // تومان
-const SERVICE_FEE_RATE = 0.05; // ۵٪ کارمزد خدمات
+const SHIPPING_BASE = 350000;
+const SHIPPING_PER_KG = 280000;
+const SERVICE_FEE_RATE = 0.05;
 const SERVICE_FEE_MIN = 150000;
+
+function parseRialToToman(raw) {
+  if (raw == null) return null;
+  const digits = String(raw).replace(/[^\d]/g, '');
+  if (!digits) return null;
+  const rial = parseInt(digits, 10);
+  if (!rial || rial < 1000) return null;
+  return Math.round(rial / 10); // ریال → تومان
+}
+
+function applyUsdRate(toman, sourceLabel) {
+  if (!toman || toman < 1000) return false;
+  usdRate = toman;
+  localStorage.setItem('usd_free_rate', String(toman));
+  localStorage.setItem('usd_rate_source', sourceLabel || 'tgju');
+  localStorage.setItem('usd_rate_time', new Date().toISOString());
+  const el = document.getElementById('usdRateDisplay');
+  if (el) {
+    el.innerHTML = Math.round(usdRate).toLocaleString('fa-IR') + ' تومان'
+      + ' <small style="color:#86868b;font-weight:400">(tgju.org)</small>';
+  }
+  return true;
+}
+
+async function fetchViaProxy(url) {
+  const proxies = [
+    (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+    (u) => 'https://corsproxy.io/?' + encodeURIComponent(u),
+    (u) => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u)
+  ];
+  for (const make of proxies) {
+    try {
+      const res = await fetch(make(url), { cache: 'no-store' });
+      if (!res.ok) continue;
+      return await res.text();
+    } catch (e) {
+      continue;
+    }
+  }
+  return null;
+}
+
+async function fetchUsdRateFromTgjuAjax() {
+  // API لحظه‌ای TGJU: call5.tgju.org/ajax.json
+  const ts = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
+  const ajaxUrl = 'https://call5.tgju.org/ajax.json?' + ts + '-live';
+  try {
+    // مستقیم
+    let data = null;
+    try {
+      const res = await fetch(ajaxUrl, { cache: 'no-store' });
+      if (res.ok) data = await res.json();
+    } catch (e) {}
+
+    // از طریق پروکسی
+    if (!data) {
+      const text = await fetchViaProxy(ajaxUrl);
+      if (text) data = JSON.parse(text);
+    }
+
+    if (data && data.current && data.current.price_dollar_rl) {
+      const p = data.current.price_dollar_rl.p;
+      const toman = parseRialToToman(p);
+      if (toman) return toman;
+    }
+  } catch (e) {}
+  return null;
+}
+
+async function fetchUsdRateFromTgjuPage() {
+  // پارس صفحه https://www.tgju.org/profile/price_dollar_rl
+  const pageUrl = 'https://www.tgju.org/profile/price_dollar_rl';
+  const html = await fetchViaProxy(pageUrl);
+  if (!html) return null;
+
+  // الگوهای رایج قیمت در صفحه TGJU (ریال)
+  const patterns = [
+    /data-col=["']info\.last_trade\.PDrCotVal["'][^>]*>([\d,]+)/i,
+    /نرخ فعلی[:\s]*([\d,]+)/,
+    /price_dollar_rl[\s\S]{0,200}?([\d]{1,3}(?:,\d{3}){2,})/,
+    /class=["'][^"']*value[^"']*["'][^>]*>\s*([\d,]+)/i
+  ];
+
+  for (const re of patterns) {
+    const m = html.match(re);
+    if (m && m[1]) {
+      const toman = parseRialToToman(m[1]);
+      // دلار آزاد معمولاً بالای ~50 هزار تومان است
+      if (toman && toman > 50000) return toman;
+    }
+  }
+  return null;
+}
 
 async function fetchUsdRate() {
   const el = document.getElementById('usdRateDisplay');
-  if (el) el.textContent = 'در حال دریافت...';
-  try {
-    // نرخ آزاد تقریبی از API عمومی
-    const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-    const data = await res.json();
-    if (data && data.rates && data.rates.IRR) {
-      // IRR رسمی خیلی پایین است؛ برای نرخ آزاد از ضریب تقریبی بازار استفاده می‌کنیم
-      // اگر API نرخ آزاد نداشت، از مقدار ذخیره‌شده/پیش‌فرض استفاده می‌شود
-      const official = data.rates.IRR;
-      // نرخ آزاد معمولاً چند برابر رسمی است — از localStorage یا fallback
-      const stored = localStorage.getItem('usd_free_rate');
-      if (stored) usdRate = Number(stored);
-    }
-  } catch (e) {
-    // ignore
+  if (el) el.textContent = 'در حال دریافت از tgju.org...';
+
+  // ۱) API لحظه‌ای TGJU
+  let toman = await fetchUsdRateFromTgjuAjax();
+
+  // ۲) پارس صفحه پروفایل دلار
+  if (!toman) toman = await fetchUsdRateFromTgjuPage();
+
+  // ۳) کش قبلی
+  if (!toman) {
+    const stored = localStorage.getItem('usd_free_rate');
+    if (stored && Number(stored) > 50000) toman = Number(stored);
   }
 
-  // تلاش برای نرخ آزاد ایران از طریق منبع جایگزین
-  try {
-    const res2 = await fetch('https://open.er-api.com/v6/latest/USD');
-    const d2 = await res2.json();
-    if (d2 && d2.rates && d2.rates.IRR) {
-      // همچنان رسمی است
-    }
-  } catch (e) {}
+  if (toman && applyUsdRate(toman, 'tgju')) {
+    showToast('نرخ دلار از tgju.org بروزرسانی شد');
+    return;
+  }
 
-  // نمایش نرخ (قابل تنظیم دستی در localStorage با کلید usd_free_rate)
-  const manual = localStorage.getItem('usd_free_rate');
-  if (manual && Number(manual) > 10000) usdRate = Number(manual);
-
-  if (el) el.textContent = Math.round(usdRate).toLocaleString('fa-IR') + ' تومان';
+  // ۴) fallback
+  if (el) el.textContent = Math.round(usdRate).toLocaleString('fa-IR') + ' تومان (ذخیره‌شده)';
+  showToast('اتصال به tgju برقرار نشد — از نرخ قبلی استفاده شد');
 }
 
 function setUsdRate(rate) {
-  usdRate = rate;
-  localStorage.setItem('usd_free_rate', String(rate));
-  const el = document.getElementById('usdRateDisplay');
-  if (el) el.textContent = Math.round(usdRate).toLocaleString('fa-IR') + ' تومان';
+  applyUsdRate(rate, 'manual');
 }
 
 function calculatePrice() {
@@ -362,9 +438,8 @@ function calculatePrice() {
   document.getElementById('rTotal').textContent = formatPrice(total);
 
   const note = document.getElementById('calcNote');
-  note.textContent = link
-    ? 'لینک ثبت شد. این مبلغ تقریبی است و پس از بررسی نهایی ممکن است کمی تغییر کند.'
-    : 'این مبلغ تقریبی است بر اساس نرخ دلار لحظه‌ای و تعرفه‌های نمونه. مبلغ نهایی پس از بررسی لینک اعلام می‌شود.';
+  note.textContent = 'نرخ دلار از tgju.org (دلار آزاد). مبلغ تقریبی است و پس از بررسی نهایی ممکن است کمی تغییر کند.'
+    + (link ? ' لینک محصول ثبت شد.' : '');
 
   document.getElementById('calcResult').hidden = false;
   document.getElementById('calcResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -379,6 +454,8 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCategories();
     renderFeatured();
     fetchUsdRate();
+    // بروزرسانی خودکار هر ۵ دقیقه
+    setInterval(fetchUsdRate, 5 * 60 * 1000);
   } else if (page === 'products') {
     initProductsPage();
   } else if (page === 'collections') {
