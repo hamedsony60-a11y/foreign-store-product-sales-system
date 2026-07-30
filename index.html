@@ -12,7 +12,6 @@
 </head>
 <body data-page="home">
 
-  <!-- Header -->
   <header class="header">
     <div class="header-inner">
       <div class="header-right">
@@ -43,12 +42,73 @@
   </header>
 
   <main class="page-fade">
-    <!-- Hero -->
     <section class="hero">
       <div class="hero-badge">خرید هوشمند از فروشگاه‌های جهانی</div>
       <h1>محصولات منتخب<br>با <em>بهترین قیمت</em></h1>
-      <p>مجموعه‌ای از پوشاک، الکترونیک و اکسسوری از برندهای معتبر، با تضمین اصالت و ارسال سریع.</p>
-      <a href="products.html" class="btn-primary">مشاهده محصولات</a>
+      <p>لینک کالا را از فروشگاه خارجی وارد کنید، وزن و قیمت را بنویسید تا هزینه نهایی با دلار لحظه‌ای محاسبه شود.</p>
+      <a href="#calculator" class="btn-primary">محاسبه قیمت</a>
+    </section>
+
+    <!-- Calculator -->
+    <section class="section" id="calculator">
+      <h2 class="section-title">محاسبه‌گر قیمت نهایی</h2>
+      <p class="section-sub">لینک محصول، قیمت و وزن را وارد کنید — هزینه با نرخ دلار لحظه‌ای و تعرفه‌ها محاسبه می‌شود</p>
+
+      <div class="calc-card">
+        <div class="calc-rate-bar">
+          <span>نرخ دلار لحظه‌ای:</span>
+          <strong id="usdRateDisplay">در حال دریافت...</strong>
+          <button type="button" class="calc-refresh" onclick="fetchUsdRate()" title="بروزرسانی نرخ">↻</button>
+        </div>
+
+        <div class="calc-form">
+          <div class="form-group">
+            <label for="calcStore">فروشگاه</label>
+            <select id="calcStore">
+              <option value="zara">Zara</option>
+              <option value="lcw">LC Waikiki</option>
+              <option value="boyner">Boyner</option>
+              <option value="koton">Koton</option>
+              <option value="defacto">Defacto</option>
+              <option value="amazon">Amazon</option>
+              <option value="shein">SHEIN</option>
+              <option value="namshi">Namshi</option>
+              <option value="noon">Noon</option>
+              <option value="trendyol">Trendyol</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="calcLink">لینک محصول</label>
+            <input type="url" id="calcLink" placeholder="لینک کالا را از سایت فروشگاه بچسبانید..." />
+          </div>
+
+          <div class="calc-row">
+            <div class="form-group">
+              <label for="calcPrice">قیمت کالا (دلار)</label>
+              <input type="number" id="calcPrice" min="0" step="0.01" placeholder="مثلاً ۴۹.۹۹" />
+            </div>
+            <div class="form-group">
+              <label for="calcWeight">وزن (کیلوگرم)</label>
+              <input type="number" id="calcWeight" min="0" step="0.1" placeholder="مثلاً ۰.۵" />
+            </div>
+          </div>
+
+          <button type="button" class="btn-primary calc-btn" onclick="calculatePrice()">محاسبه قیمت نهایی</button>
+        </div>
+
+        <div class="calc-result" id="calcResult" hidden>
+          <h3>جزئیات هزینه</h3>
+          <div class="calc-breakdown">
+            <div class="calc-line"><span>قیمت کالا (تومان)</span><strong id="rProduct">—</strong></div>
+            <div class="calc-line"><span>هزینه حمل بین‌المللی</span><strong id="rShipping">—</strong></div>
+            <div class="calc-line"><span>حقوق گمرکی و تعرفه</span><strong id="rTariff">—</strong></div>
+            <div class="calc-line"><span>کارمزد خدمات</span><strong id="rFee">—</strong></div>
+            <div class="calc-line total"><span>جمع نهایی</span><strong id="rTotal">—</strong></div>
+          </div>
+          <p class="calc-note" id="calcNote"></p>
+        </div>
+      </div>
     </section>
 
     <!-- Foreign Stores -->
@@ -69,14 +129,12 @@
       </div>
     </section>
 
-    <!-- Categories -->
     <section class="section">
       <h2 class="section-title">دسته‌بندی‌ها</h2>
       <p class="section-sub">انتخاب سریع بر اساس نوع محصول</p>
       <div class="cat-grid" id="categoryGrid"></div>
     </section>
 
-    <!-- Featured -->
     <section class="section">
       <div class="section-header">
         <div>
@@ -91,7 +149,6 @@
 
   <footer class="footer">© ۱۴۰۵ فروشگاه · تمامی حقوق محفوظ است</footer>
 
-  <!-- Cart Drawer -->
   <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
   <aside class="cart-drawer" id="cartDrawer">
     <div class="cart-header">
@@ -110,7 +167,6 @@
     <div class="cart-items" id="cartItems"></div>
   </aside>
 
-  <!-- Product Modal -->
   <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
     <div class="modal">
       <button class="modal-close" onclick="closeModal()" aria-label="بستن">
