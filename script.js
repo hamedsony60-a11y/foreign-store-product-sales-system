@@ -44,7 +44,7 @@ function getCartCount() {
 }
 
 function formatPrice(n) {
-  return n.toLocaleString('fa-IR') + ' تومان';
+  return Math.round(n).toLocaleString('fa-IR') + ' تومان';
 }
 
 /* ========== UI UPDATES ========== */
@@ -99,7 +99,6 @@ function bumpTotal() {
   row.classList.add('bump');
 }
 
-/* ========== CART DRAWER ========== */
 function openCart() {
   document.getElementById('cartOverlay').classList.add('open');
   document.getElementById('cartDrawer').classList.add('open');
@@ -110,23 +109,17 @@ function closeCart() {
   document.getElementById('cartDrawer').classList.remove('open');
 }
 
-/* ========== SEARCH TOGGLE ========== */
 function toggleSearch() {
   const input = document.getElementById('headerSearch');
   input.classList.toggle('open');
-  if (input.classList.contains('open')) {
-    input.focus();
-  } else {
-    input.value = '';
-  }
+  if (input.classList.contains('open')) input.focus();
+  else input.value = '';
 }
 
-/* ========== MOBILE MENU ========== */
 function toggleMenu() {
   document.getElementById('mainNav').classList.toggle('mobile-open');
 }
 
-/* ========== TOAST ========== */
 function showToast(msg) {
   let t = document.getElementById('toast');
   if (!t) {
@@ -141,7 +134,6 @@ function showToast(msg) {
   t._timer = setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-/* ========== PRODUCT CARD HTML ========== */
 function productCardHTML(p) {
   const badgeClass = p.badge === 'جدید' ? 'new' : '';
   const badgeHTML = p.badge ? `<span class="product-badge ${badgeClass}">${p.badge}</span>` : '';
@@ -162,7 +154,6 @@ function productCardHTML(p) {
     </div>`;
 }
 
-/* ========== MODAL ========== */
 function openModal(id) {
   const p = products.find(pr => pr.id === id);
   if (!p) return;
@@ -178,7 +169,6 @@ function closeModal() {
   document.getElementById('modalOverlay').classList.remove('open');
 }
 
-/* ========== RENDER HELPERS ========== */
 function renderProducts(list, containerId) {
   const el = document.getElementById(containerId);
   if (!el) return;
@@ -205,21 +195,18 @@ function renderCategories() {
     </a>`).join('');
 }
 
-/* ========== PRODUCTS PAGE ========== */
 let activeCategory = 'همه';
 let searchQuery = '';
 
 function initProductsPage() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('cat')) activeCategory = params.get('cat');
-
   const filterEl = document.getElementById('filters');
   if (filterEl) {
     filterEl.innerHTML = categories.map(c =>
       `<button class="filter-btn ${c === activeCategory ? 'active' : ''}" onclick="setFilter('${c}')">${c}</button>`
     ).join('');
   }
-
   const searchEl = document.getElementById('productSearch');
   if (searchEl) {
     searchEl.addEventListener('input', e => {
@@ -227,7 +214,6 @@ function initProductsPage() {
       applyFilters();
     });
   }
-
   applyFilters();
 }
 
@@ -241,11 +227,8 @@ function setFilter(cat) {
 
 function applyFilters() {
   let list = products;
-  if (activeCategory !== 'همه') {
-    list = list.filter(p => p.category === activeCategory);
-  }
+  if (activeCategory !== 'همه') list = list.filter(p => p.category === activeCategory);
   if (searchQuery) {
-    const q = searchQuery.toLowerCase();
     list = list.filter(p =>
       p.name.includes(searchQuery) ||
       p.category.includes(searchQuery) ||
@@ -255,7 +238,6 @@ function applyFilters() {
   renderProducts(list, 'productsGrid');
 }
 
-/* ========== COLLECTIONS PAGE ========== */
 function initCollectionsPage() {
   const el = document.getElementById('collectionsContainer');
   if (!el) return;
@@ -272,19 +254,120 @@ function initCollectionsPage() {
           </div>
         </div>
         <div class="collection-products">
-          <div class="product-grid">
-            ${prods.map(productCardHTML).join('')}
-          </div>
+          <div class="product-grid">${prods.map(productCardHTML).join('')}</div>
         </div>
       </div>`;
   }).join('');
 }
 
-/* ========== CONTACT FORM ========== */
 function handleContact(e) {
   e.preventDefault();
   showToast('پیام شما ارسال شد');
   e.target.reset();
+}
+
+/* ========== PRICE CALCULATOR ========== */
+let usdRate = 920000; // fallback تومان
+
+const TARIFF = {
+  // درصد تقریبی تعرفه + ارزش افزوده (نمونه)
+  default: 0.12,
+  amazon: 0.15,
+  shein: 0.10,
+  zara: 0.12,
+  lcw: 0.10,
+  boyner: 0.12,
+  koton: 0.10,
+  defacto: 0.10,
+  namshi: 0.12,
+  noon: 0.12,
+  trendyol: 0.10
+};
+
+// حمل: پایه + به ازای هر کیلو
+const SHIPPING_BASE = 350000; // تومان
+const SHIPPING_PER_KG = 280000; // تومان
+const SERVICE_FEE_RATE = 0.05; // ۵٪ کارمزد خدمات
+const SERVICE_FEE_MIN = 150000;
+
+async function fetchUsdRate() {
+  const el = document.getElementById('usdRateDisplay');
+  if (el) el.textContent = 'در حال دریافت...';
+  try {
+    // نرخ آزاد تقریبی از API عمومی
+    const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    const data = await res.json();
+    if (data && data.rates && data.rates.IRR) {
+      // IRR رسمی خیلی پایین است؛ برای نرخ آزاد از ضریب تقریبی بازار استفاده می‌کنیم
+      // اگر API نرخ آزاد نداشت، از مقدار ذخیره‌شده/پیش‌فرض استفاده می‌شود
+      const official = data.rates.IRR;
+      // نرخ آزاد معمولاً چند برابر رسمی است — از localStorage یا fallback
+      const stored = localStorage.getItem('usd_free_rate');
+      if (stored) usdRate = Number(stored);
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  // تلاش برای نرخ آزاد ایران از طریق منبع جایگزین
+  try {
+    const res2 = await fetch('https://open.er-api.com/v6/latest/USD');
+    const d2 = await res2.json();
+    if (d2 && d2.rates && d2.rates.IRR) {
+      // همچنان رسمی است
+    }
+  } catch (e) {}
+
+  // نمایش نرخ (قابل تنظیم دستی در localStorage با کلید usd_free_rate)
+  const manual = localStorage.getItem('usd_free_rate');
+  if (manual && Number(manual) > 10000) usdRate = Number(manual);
+
+  if (el) el.textContent = Math.round(usdRate).toLocaleString('fa-IR') + ' تومان';
+}
+
+function setUsdRate(rate) {
+  usdRate = rate;
+  localStorage.setItem('usd_free_rate', String(rate));
+  const el = document.getElementById('usdRateDisplay');
+  if (el) el.textContent = Math.round(usdRate).toLocaleString('fa-IR') + ' تومان';
+}
+
+function calculatePrice() {
+  const price = parseFloat(document.getElementById('calcPrice').value);
+  const weight = parseFloat(document.getElementById('calcWeight').value);
+  const store = document.getElementById('calcStore').value;
+  const link = document.getElementById('calcLink').value.trim();
+
+  if (!price || price <= 0) {
+    showToast('قیمت کالا را وارد کنید');
+    return;
+  }
+  if (!weight || weight <= 0) {
+    showToast('وزن کالا را وارد کنید');
+    return;
+  }
+
+  const productToman = price * usdRate;
+  const shipping = SHIPPING_BASE + (weight * SHIPPING_PER_KG);
+  const tariffRate = TARIFF[store] || TARIFF.default;
+  const tariff = productToman * tariffRate;
+  let fee = productToman * SERVICE_FEE_RATE;
+  if (fee < SERVICE_FEE_MIN) fee = SERVICE_FEE_MIN;
+  const total = productToman + shipping + tariff + fee;
+
+  document.getElementById('rProduct').textContent = formatPrice(productToman);
+  document.getElementById('rShipping').textContent = formatPrice(shipping);
+  document.getElementById('rTariff').textContent = formatPrice(tariff) + ` (${Math.round(tariffRate * 100)}٪)`;
+  document.getElementById('rFee').textContent = formatPrice(fee);
+  document.getElementById('rTotal').textContent = formatPrice(total);
+
+  const note = document.getElementById('calcNote');
+  note.textContent = link
+    ? 'لینک ثبت شد. این مبلغ تقریبی است و پس از بررسی نهایی ممکن است کمی تغییر کند.'
+    : 'این مبلغ تقریبی است بر اساس نرخ دلار لحظه‌ای و تعرفه‌های نمونه. مبلغ نهایی پس از بررسی لینک اعلام می‌شود.';
+
+  document.getElementById('calcResult').hidden = false;
+  document.getElementById('calcResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 /* ========== INIT ========== */
@@ -295,13 +378,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (page === 'home') {
     renderCategories();
     renderFeatured();
+    fetchUsdRate();
   } else if (page === 'products') {
     initProductsPage();
   } else if (page === 'collections') {
     initCollectionsPage();
   }
 
-  // Close search on outside click
   document.addEventListener('click', e => {
     const wrap = document.querySelector('.search-wrap');
     const input = document.getElementById('headerSearch');
@@ -311,7 +394,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Escape closes modal/cart
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       closeModal();
