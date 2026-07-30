@@ -445,6 +445,34 @@ ul { list-style: none; }
 }
 .section-header a:hover { text-decoration: underline; }
 
+/* ========== FOREIGN STORES ========== */
+.stores-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.store-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  transition: all var(--transition);
+}
+.store-link:hover {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(37,99,235,0.25);
+}
+
 /* ========== CATEGORIES ========== */
 .cat-grid {
   display: grid;
