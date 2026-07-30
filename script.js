@@ -118,7 +118,7 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2000);
 }
 
 function productCardHTML(p) {
@@ -242,10 +242,12 @@ function handleContact(e) {
   e.target.reset();
 }
 
-/* ========== LIVE USD RATE (بازار آزاد) ========== */
-// حداقل منطقی برای دلار آزاد ۱۴۰۵ ≈ بالای ۱۰۰٬۰۰۰ تومان
+/* ========== LIVE USD RATE — سریع ========== */
 const MIN_VALID_TOMAN = 100000;
-let usdRate = 193500; // fallback روز
+const FETCH_TIMEOUT_MS = 8000;   // هر درخواست حداکثر ۸ ثانیه
+const TOTAL_TIMEOUT_MS = 15000;  // کل فرآیند حداکثر ۱۵ ثانیه
+let usdRate = 193500;
+let rateFetching = false;
 
 const TARIFF = {
   default: 0.12, amazon: 0.15, shein: 0.10, zara: 0.12, lcw: 0.10,
@@ -279,113 +281,146 @@ function applyUsdRate(toman, source) {
   return true;
 }
 
+function showInstantRate() {
+  clearBadCache();
+  const cached = Number(localStorage.getItem('usd_free_rate') || 0);
+  if (cached >= MIN_VALID_TOMAN) {
+    applyUsdRate(cached, 'ذخیره');
+  } else {
+    applyUsdRate(usdRate, 'پیش‌فرض');
+  }
+}
+
+function withTimeout(promise, ms) {
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error('timeout')), ms);
+    promise.then(
+      v => { clearTimeout(t); resolve(v); },
+      e => { clearTimeout(t); reject(e); }
+    );
+  });
+}
+
+function fetchWithTimeout(url, ms) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { cache: 'no-store', signal: ctrl.signal })
+    .then(res => {
+      clearTimeout(timer);
+      if (!res.ok) throw new Error('http');
+      return res;
+    })
+    .catch(e => {
+      clearTimeout(timer);
+      throw e;
+    });
+}
+
 function parseRialToToman(raw) {
   const digits = String(raw).replace(/[^\d]/g, '');
   if (!digits) return null;
   const n = parseInt(digits, 10);
   if (!n) return null;
-  // اگر عدد خیلی بزرگ بود (ریال) تبدیل به تومان
   if (n > 500000) return Math.round(n / 10);
   return n;
 }
 
-async function fetchJson(url) {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error('http ' + res.status);
-  return res.json();
+// منابع سریع (بدون پروکسی کند)
+async function tryNavasanJsdelivr() {
+  const res = await fetchWithTimeout(
+    'https://cdn.jsdelivr.net/gh/HosseinOdd/Navasan-API@main/data/fiat.json',
+    FETCH_TIMEOUT_MS
+  );
+  const data = await res.json();
+  const v = data && data.usd && Number(data.usd.value);
+  if (v >= MIN_VALID_TOMAN) return { rate: v, source: 'بازار آزاد' };
+  throw new Error('invalid');
 }
 
-async function fetchTextProxy(url) {
-  const proxies = [
-    'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
-    'https://corsproxy.io/?' + encodeURIComponent(url)
-  ];
-  for (const p of proxies) {
-    try {
-      const res = await fetch(p, { cache: 'no-store' });
-      if (res.ok) return await res.text();
-    } catch (e) {}
-  }
-  return null;
-}
-
-// ۱) منبع پایدار بدون CORS — نرخ تومان بازار آزاد
-async function fetchFromNavasan() {
-  const urls = [
+async function tryNavasanGithub() {
+  const res = await fetchWithTimeout(
     'https://raw.githubusercontent.com/HosseinOdd/Navasan-API/main/data/fiat.json',
-    'https://cdn.jsdelivr.net/gh/HosseinOdd/Navasan-API@main/data/fiat.json'
-  ];
-  for (const url of urls) {
-    try {
-      const data = await fetchJson(url);
-      const v = data && data.usd && data.usd.value;
-      if (v && Number(v) >= MIN_VALID_TOMAN) return { rate: Number(v), source: 'بازار آزاد' };
-    } catch (e) {}
-  }
-  return null;
+    FETCH_TIMEOUT_MS
+  );
+  const data = await res.json();
+  const v = data && data.usd && Number(data.usd.value);
+  if (v >= MIN_VALID_TOMAN) return { rate: v, source: 'بازار آزاد' };
+  throw new Error('invalid');
 }
 
-// ۲) TGJU ajax
-async function fetchFromTgjuAjax() {
-  const ts = Date.now();
-  const ajaxUrl = 'https://call5.tgju.org/ajax.json?t=' + ts;
-  try {
-    let data = null;
-    try {
-      data = await fetchJson(ajaxUrl);
-    } catch (e) {
-      const text = await fetchTextProxy(ajaxUrl);
-      if (text) data = JSON.parse(text);
-    }
-    const p = data && data.current && data.current.price_dollar_rl && data.current.price_dollar_rl.p;
-    const toman = parseRialToToman(p);
-    if (toman && toman >= MIN_VALID_TOMAN) return { rate: toman, source: 'tgju.org' };
-  } catch (e) {}
-  return null;
+async function tryTgjuAjax() {
+  const res = await fetchWithTimeout(
+    'https://call5.tgju.org/ajax.json?t=' + Date.now(),
+    FETCH_TIMEOUT_MS
+  );
+  const data = await res.json();
+  const p = data && data.current && data.current.price_dollar_rl && data.current.price_dollar_rl.p;
+  const toman = parseRialToToman(p);
+  if (toman >= MIN_VALID_TOMAN) return { rate: toman, source: 'tgju.org' };
+  throw new Error('invalid');
 }
 
-// ۳) صفحه TGJU
-async function fetchFromTgjuPage() {
-  const html = await fetchTextProxy('https://www.tgju.org/profile/price_dollar_rl');
-  if (!html) return null;
-  const patterns = [
-    /data-col=["']info\.last_trade\.PDrCotVal["'][^>]*>([\d,]+)/i,
-    /نرخ فعلی[:\s]*([\d,]{6,})/,
-    /([\d]{1,3}(?:,\d{3}){2,})/
-  ];
-  for (const re of patterns) {
-    const m = html.match(re);
-    if (m) {
-      const toman = parseRialToToman(m[1]);
-      if (toman && toman >= MIN_VALID_TOMAN) return { rate: toman, source: 'tgju.org' };
-    }
-  }
-  return null;
+async function tryTgjuProxy() {
+  const url = 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://call5.tgju.org/ajax.json?t=' + Date.now());
+  const res = await fetchWithTimeout(url, FETCH_TIMEOUT_MS);
+  const data = await res.json();
+  const p = data && data.current && data.current.price_dollar_rl && data.current.price_dollar_rl.p;
+  const toman = parseRialToToman(p);
+  if (toman >= MIN_VALID_TOMAN) return { rate: toman, source: 'tgju.org' };
+  throw new Error('invalid');
 }
 
 async function fetchUsdRate() {
-  clearBadCache();
-  const el = document.getElementById('usdRateDisplay');
-  if (el) el.textContent = 'در حال دریافت نرخ لحظه‌ای...';
+  if (rateFetching) return;
+  rateFetching = true;
 
-  const sources = [fetchFromNavasan, fetchFromTgjuAjax, fetchFromTgjuPage];
-  for (const fn of sources) {
-    try {
-      const result = await fn();
-      if (result && applyUsdRate(result.rate, result.source)) {
-        showToast('نرخ دلار بروزرسانی شد: ' + result.rate.toLocaleString('fa-IR') + ' تومان');
-        return;
-      }
-    } catch (e) {}
+  // فوراً نرخ قبلی را نشان بده (بدون انتظار)
+  showInstantRate();
+
+  const el = document.getElementById('usdRateDisplay');
+  if (el && !el.dataset.loading) {
+    el.dataset.loading = '1';
   }
 
-  // کش معتبر
-  const cached = Number(localStorage.getItem('usd_free_rate') || 0);
-  if (cached >= MIN_VALID_TOMAN && applyUsdRate(cached, 'ذخیره محلی')) return;
+  // همه منابع با هم؛ اولین پاسخ معتبر برنده است
+  const tasks = [
+    tryNavasanJsdelivr(),
+    tryNavasanGithub(),
+    tryTgjuAjax(),
+    tryTgjuProxy()
+  ].map(p => p.catch(() => null));
 
-  // آخرین fallback معقول
-  applyUsdRate(193500, 'پیش‌فرض');
-  showToast('نرخ آنلاین در دسترس نبود — از نرخ پیش‌فرض استفاده شد');
+  try {
+    const result = await withTimeout(
+      (async () => {
+        // بررسی ترتیبی نتایج با Promise.race روی موفقیت
+        return await new Promise(resolve => {
+          let pending = tasks.length;
+          let done = false;
+          tasks.forEach(async t => {
+            const r = await t;
+            pending--;
+            if (!done && r && r.rate) {
+              done = true;
+              resolve(r);
+            } else if (!done && pending === 0) {
+              resolve(null);
+            }
+          });
+        });
+      })(),
+      TOTAL_TIMEOUT_MS
+    );
+
+    if (result && applyUsdRate(result.rate, result.source)) {
+      showToast('نرخ دلار: ' + result.rate.toLocaleString('fa-IR') + ' تومان');
+    }
+  } catch (e) {
+    // تایم‌اوت کلی — همان نرخ لحظه‌ای/کش باقی می‌ماند
+  }
+
+  rateFetching = false;
+  if (el) delete el.dataset.loading;
 }
 
 function setUsdRate(rate) {
@@ -405,7 +440,7 @@ function calculatePrice() {
   const shipping = SHIPPING_BASE + weight * SHIPPING_PER_KG;
   const tariffRate = TARIFF[store] || TARIFF.default;
   const tariff = productToman * tariffRate;
-  let fee = Math.max(productToman * SERVICE_FEE_RATE, SERVICE_FEE_MIN);
+  const fee = Math.max(productToman * SERVICE_FEE_RATE, SERVICE_FEE_MIN);
   const total = productToman + shipping + tariff + fee;
 
   document.getElementById('rProduct').textContent = formatPrice(productToman);
@@ -414,7 +449,7 @@ function calculatePrice() {
   document.getElementById('rFee').textContent = formatPrice(fee);
   document.getElementById('rTotal').textContent = formatPrice(total);
   document.getElementById('calcNote').textContent =
-    'محاسبه با نرخ دلار آزاد لحظه‌ای (' + usdRate.toLocaleString('fa-IR') + ' تومان). مبلغ تقریبی است.'
+    'محاسبه با نرخ دلار آزاد (' + usdRate.toLocaleString('fa-IR') + ' تومان). مبلغ تقریبی است.'
     + (link ? ' لینک محصول ثبت شد.' : '');
 
   document.getElementById('calcResult').hidden = false;
@@ -430,8 +465,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (page === 'home') {
     renderCategories();
     renderFeatured();
-    fetchUsdRate();
-    setInterval(fetchUsdRate, 3 * 60 * 1000); // هر ۳ دقیقه
+    showInstantRate(); // فوری
+    fetchUsdRate();    // بروزرسانی در پس‌زمینه
+    setInterval(fetchUsdRate, 5 * 60 * 1000);
   } else if (page === 'products') {
     initProductsPage();
   } else if (page === 'collections') {
