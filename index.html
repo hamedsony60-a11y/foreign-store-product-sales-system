@@ -3,967 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>فروشگاه خرید از خارج | Trendyol · Zara · Amazon · SHEIN</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #f8fafc;
-      --bg-white: #ffffff;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --text-light: #94a3b8;
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --primary-light: #3b82f6;
-      --accent: #0ea5e9;
-      --success: #10b981;
-      --danger: #ef4444;
-      --border: #e2e8f0;
-      --shadow: 0 4px 20px rgba(0,0,0,0.06);
-      --shadow-lg: 0 10px 40px rgba(0,0,0,0.08);
-      --radius: 14px;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Vazirmatn', Tahoma, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-    }
-    a { text-decoration: none; color: inherit; }
-    img { max-width: 100%; display: block; }
-
-    /* ========== HEADER ========== */
-    .topbar {
-      background: #0f172a;
-      color: #94a3b8;
-      font-size: 0.8rem;
-      padding: 8px 0;
-      text-align: center;
-    }
-    .topbar strong { color: #38bdf8; }
-
-    header {
-      background: var(--bg-white);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 1px 8px rgba(0,0,0,0.04);
-    }
-    .header-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      gap: 24px;
-    }
-    .logo {
-      font-size: 1.45rem;
-      font-weight: 800;
-      color: var(--primary);
-      white-space: nowrap;
-    }
-    .logo span { color: var(--text); }
-
-    .search-box {
-      flex: 1;
-      display: flex;
-      max-width: 520px;
-      background: #f1f5f9;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1.5px solid transparent;
-      transition: border-color 0.2s;
-    }
-    .search-box:focus-within { border-color: var(--primary); background: #fff; }
-    .search-box input {
-      flex: 1;
-      border: none;
-      background: transparent;
-      padding: 12px 16px;
-      font-family: inherit;
-      font-size: 0.95rem;
-      outline: none;
-      color: var(--text);
-    }
-    .search-box input::placeholder { color: var(--text-light); }
-    .search-box button {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 0 20px;
-      font-family: inherit;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .search-box button:hover { background: var(--primary-dark); }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .header-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      transition: color 0.2s;
-      cursor: pointer;
-    }
-    .header-btn:hover { color: var(--primary); }
-    .cart-badge {
-      background: var(--danger);
-      color: #fff;
-      font-size: 0.7rem;
-      font-weight: 700;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* ========== NAV ========== */
-    nav {
-      background: var(--bg-white);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      gap: 4px;
-      overflow-x: auto;
-    }
-    .nav-inner a {
-      padding: 12px 16px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      white-space: nowrap;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s;
-    }
-    .nav-inner a:hover, .nav-inner a.active {
-      color: var(--primary);
-      border-bottom-color: var(--primary);
-    }
-
-    /* ========== HERO ========== */
-    .hero {
-      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0c4a6e 100%);
-      color: #fff;
-      padding: 60px 20px 70px;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(56,189,248,0.15), transparent);
-    }
-    .hero-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      position: relative;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
-      align-items: center;
-    }
-    .hero-content h1 {
-      font-size: clamp(1.6rem, 3.5vw, 2.5rem);
-      font-weight: 800;
-      line-height: 1.45;
-      margin-bottom: 16px;
-    }
-    .hero-content h1 span { color: #38bdf8; }
-    .hero-content p {
-      color: #94a3b8;
-      font-size: 1.05rem;
-      margin-bottom: 28px;
-      max-width: 480px;
-    }
-    .hero-search {
-      display: flex;
-      background: #fff;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-      max-width: 480px;
-    }
-    .hero-search input {
-      flex: 1;
-      border: none;
-      padding: 16px 20px;
-      font-family: inherit;
-      font-size: 0.95rem;
-      outline: none;
-    }
-    .hero-search button {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 0 28px;
-      font-family: inherit;
-      font-weight: 700;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .hero-search button:hover { background: var(--primary-dark); }
-    .hero-hint {
-      margin-top: 12px;
-      font-size: 0.82rem;
-      color: #64748b;
-    }
-
-    .hero-visual {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .hero-store-card {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 12px;
-      padding: 16px 20px;
-      text-align: center;
-      backdrop-filter: blur(8px);
-      min-width: 100px;
-      transition: transform 0.2s, background 0.2s;
-    }
-    .hero-store-card:hover {
-      transform: translateY(-4px);
-      background: rgba(255,255,255,0.14);
-    }
-    .hero-store-card .icon { font-size: 1.6rem; margin-bottom: 6px; }
-    .hero-store-card .name { font-size: 0.8rem; font-weight: 600; color: #e2e8f0; }
-
-    /* ========== SECTION COMMON ========== */
-    .section {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 50px 20px;
-    }
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 28px;
-    }
-    .section-header h2 {
-      font-size: 1.4rem;
-      font-weight: 700;
-    }
-    .section-header a {
-      color: var(--primary);
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-    .section-header a:hover { text-decoration: underline; }
-
-    /* ========== STORES ========== */
-    .stores-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 14px;
-    }
-    .store-card {
-      background: var(--bg-white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px 12px;
-      text-align: center;
-      transition: all 0.25s;
-      cursor: pointer;
-    }
-    .store-card:hover {
-      border-color: var(--primary);
-      box-shadow: var(--shadow);
-      transform: translateY(-3px);
-    }
-    .store-card .store-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      margin: 0 auto 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: #fff;
-    }
-    .store-card .store-name {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-    .store-card .store-count {
-      font-size: 0.75rem;
-      color: var(--text-light);
-      margin-top: 2px;
-    }
-
-    /* ========== HOW IT WORKS ========== */
-    .how-section {
-      background: var(--bg-white);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-    }
-    .step {
-      text-align: center;
-      padding: 20px 12px;
-    }
-    .step-num {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: #fff;
-      font-weight: 800;
-      font-size: 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-    }
-    .step h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .step p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    /* ========== PRODUCTS ========== */
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 18px;
-    }
-    .product-card {
-      background: var(--bg-white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      transition: all 0.25s;
-      cursor: pointer;
-    }
-    .product-card:hover {
-      box-shadow: var(--shadow-lg);
-      transform: translateY(-4px);
-      border-color: #cbd5e1;
-    }
-    .product-img {
-      height: 200px;
-      background: #f1f5f9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .product-badge {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: var(--danger);
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 6px;
-    }
-    .product-badge.new { background: var(--success); }
-    .product-badge.store {
-      background: #0f172a;
-      left: 10px;
-      right: auto;
-    }
-    .product-body {
-      padding: 16px;
-    }
-    .product-store {
-      font-size: 0.75rem;
-      color: var(--primary);
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    .product-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      line-height: 1.5;
-      margin-bottom: 10px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      height: 2.8em;
-    }
-    .product-price-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .product-price {
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: var(--text);
-    }
-    .product-old-price {
-      font-size: 0.8rem;
-      color: var(--text-light);
-      text-decoration: line-through;
-      margin-right: 6px;
-    }
-    .product-add {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: #eff6ff;
-      color: var(--primary);
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-    .product-add:hover {
-      background: var(--primary);
-      color: #fff;
-    }
-
-    /* ========== BENEFITS ========== */
-    .benefits-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 18px;
-    }
-    .benefit-card {
-      background: var(--bg-white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px 24px;
-      transition: all 0.25s;
-    }
-    .benefit-card:hover {
-      box-shadow: var(--shadow);
-      border-color: #cbd5e1;
-    }
-    .benefit-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      margin-bottom: 14px;
-    }
-    .benefit-card h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-    .benefit-card p {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-    }
-
-    /* ========== CTA ========== */
-    .cta-section {
-      background: linear-gradient(135deg, #0f172a, #1e3a5f);
-      color: #fff;
-      padding: 60px 20px;
-      text-align: center;
-    }
-    .cta-section h2 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      margin-bottom: 12px;
-    }
-    .cta-section p {
-      color: #94a3b8;
-      margin-bottom: 28px;
-      font-size: 1.05rem;
-    }
-    .cta-btn {
-      display: inline-block;
-      background: var(--primary);
-      color: #fff;
-      font-weight: 700;
-      font-size: 1rem;
-      padding: 14px 40px;
-      border-radius: 12px;
-      transition: background 0.2s, transform 0.2s;
-    }
-    .cta-btn:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-    }
-
-    /* ========== FOOTER ========== */
-    footer {
-      background: #0f172a;
-      color: #94a3b8;
-      padding: 50px 20px 30px;
-    }
-    .footer-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 40px;
-    }
-    .footer-brand .logo {
-      margin-bottom: 12px;
-      display: inline-block;
-    }
-    .footer-brand p {
-      font-size: 0.88rem;
-      line-height: 1.8;
-      max-width: 280px;
-    }
-    .footer-col h4 {
-      color: #e2e8f0;
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-bottom: 16px;
-    }
-    .footer-col a {
-      display: block;
-      font-size: 0.88rem;
-      margin-bottom: 10px;
-      transition: color 0.2s;
-    }
-    .footer-col a:hover { color: #38bdf8; }
-    .footer-bottom {
-      max-width: 1200px;
-      margin: 40px auto 0;
-      padding-top: 24px;
-      border-top: 1px solid #1e293b;
-      text-align: center;
-      font-size: 0.82rem;
-      color: #475569;
-    }
-
-    /* ========== RESPONSIVE ========== */
-    @media (max-width: 900px) {
-      .hero-inner { grid-template-columns: 1fr; }
-      .hero-visual { display: none; }
-      .steps { grid-template-columns: repeat(2, 1fr); }
-      .footer-inner { grid-template-columns: 1fr 1fr; gap: 28px; }
-    }
-    @media (max-width: 600px) {
-      .header-inner { flex-wrap: wrap; gap: 12px; }
-      .search-box { order: 3; max-width: 100%; width: 100%; }
-      .steps { grid-template-columns: 1fr; }
-      .footer-inner { grid-template-columns: 1fr; }
-      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-      .product-img { height: 140px; font-size: 2.5rem; }
-    }
-  </style>
+  <title>فروشگاه | صفحه اصلی</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-
-  <!-- Top bar -->
-  <div class="topbar">
-    ارسال به سراسر ایران · تضمین اصالت کالا · <strong>پشتیبانی ۲۴ ساعته</strong>
-  </div>
+<body data-page="home">
 
   <!-- Header -->
-  <header>
+  <header class="header">
     <div class="header-inner">
-      <a href="#" class="logo">فروش<span>گاه</span></a>
-      <div class="search-box">
-        <input type="text" placeholder="لینک محصول یا نام کالا را وارد کنید..." />
-        <button>جستجو</button>
+      <div class="header-right">
+        <a href="index.html" class="logo">فروش<span>گاه</span></a>
+        <nav class="nav" id="mainNav">
+          <a href="index.html" class="active">خانه</a>
+          <a href="products.html">محصولات</a>
+          <a href="collections.html">مجموعه‌ها</a>
+          <a href="contact.html">تماس</a>
+        </nav>
       </div>
-      <div class="header-actions">
-        <div class="header-btn">ورود / ثبت‌نام</div>
-        <div class="header-btn">
-          سبد خرید
-          <span class="cart-badge">2</span>
+      <div class="header-left">
+        <div class="search-wrap">
+          <button class="icon-btn" onclick="toggleSearch()" aria-label="جستجو">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </button>
+          <input type="text" class="search-input" id="headerSearch" placeholder="جستجو..." />
         </div>
+        <button class="icon-btn" onclick="openCart()" aria-label="سبد خرید">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+        <button class="menu-toggle icon-btn" onclick="toggleMenu()" aria-label="منو">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Nav -->
-  <nav>
-    <div class="nav-inner">
-      <a href="#" class="active">صفحه اصلی</a>
-      <a href="#stores">فروشگاه‌ها</a>
-      <a href="#products">محصولات</a>
-      <a href="#how">نحوه خرید</a>
-      <a href="#">دسته‌بندی‌ها</a>
-      <a href="#">پیگیری سفارش</a>
-      <a href="#">پشتیبانی</a>
-    </div>
-  </nav>
+  <main class="page-fade">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-badge">خرید هوشمند از فروشگاه‌های جهانی</div>
+      <h1>محصولات منتخب<br>با <em>بهترین قیمت</em></h1>
+      <p>مجموعه‌ای از پوشاک، الکترونیک و اکسسوری از برندهای معتبر، با تضمین اصالت و ارسال سریع.</p>
+      <a href="products.html" class="btn-primary">مشاهده محصولات</a>
+    </section>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-content">
-        <h1>خرید آسان از <span>فروشگاه‌های خارجی</span><br>تا درب منزل شما</h1>
-        <p>لینک محصول مورد نظرتان از Trendyol، Zara، Amazon، SHEIN و سایر فروشگاه‌ها را وارد کنید و باقی کار را به ما بسپارید.</p>
-        <div class="hero-search">
-          <input type="text" placeholder="لینک محصول را اینجا بچسبانید..." />
-          <button>ثبت سفارش</button>
-        </div>
-        <div class="hero-hint">از بیش از ۱۰ فروشگاه معتبر بین‌المللی خرید کنید</div>
-      </div>
-      <div class="hero-visual">
-        <div class="hero-store-card"><div class="icon">🟠</div><div class="name">Trendyol</div></div>
-        <div class="hero-store-card"><div class="icon">⬛</div><div class="name">Zara</div></div>
-        <div class="hero-store-card"><div class="icon">📦</div><div class="name">Amazon</div></div>
-        <div class="hero-store-card"><div class="icon">🛍️</div><div class="name">SHEIN</div></div>
-        <div class="hero-store-card"><div class="icon">👗</div><div class="name">LC Waikiki</div></div>
-        <div class="hero-store-card"><div class="icon">☀️</div><div class="name">Noon</div></div>
-      </div>
-    </div>
-  </section>
+    <!-- Categories -->
+    <section class="section">
+      <h2 class="section-title">دسته‌بندی‌ها</h2>
+      <p class="section-sub">انتخاب سریع بر اساس نوع محصول</p>
+      <div class="cat-grid" id="categoryGrid"></div>
+    </section>
 
-  <!-- Stores -->
-  <section class="section" id="stores">
-    <div class="section-header">
-      <h2>فروشگاه‌های قابل خرید</h2>
-      <a href="#">مشاهده همه ←</a>
-    </div>
-    <div class="stores-grid">
-      <div class="store-card">
-        <div class="store-icon" style="background:#f27a1a">T</div>
-        <div class="store-name">Trendyol</div>
-        <div class="store-count">هزاران محصول</div>
-      </div>
-      <div class="store-card">
-        <div class="store-icon" style="background:#000">Z</div>
-        <div class="store-name">Zara</div>
-        <div class="store-count">مد و پوشاک</div>
-      </div>
-      <div class="store-card">
-        <div class="store-icon" style="background:#0055a5">LC</div>
-        <div class="store-name">LC Waikiki</div>
-        <div class="store-count">پوشاک خانواده</div>
-      </div>
-      <div class="store-card">
-        <div class="store-icon" style="background:#e30613">B</div>
-        <div class="store-name">Boyner</div>
-        <div class="store-count">برندهای لوکس</div>
-      </div>
-      <div class="store-card">
-        <div class="store-icon" style="background:#e31c25">K</div>
-        <div class="store-name">Koton</div>
-        <div class="store-count">مد روز</div>
-      </div>
-      <div class="store-card">
-        <div class="store-icon" style="background:#1a1a2e">D</div>
-        <div class="store-name">Defacto</div>
-        <div class="store-count">پوشاک</div>
-      </div>
-      <div class="store-card">
-        <div class="store-icon" style="background:#ff9900">A</div>
-        <div class="store-name">Amazon</div>
-        <div class="store-count">همه‌چیز</div>
-      </div>
-      <div class="store-card">
-        <div class="store-icon" style="background:#000">S</div>
-        <div class="store-name">SHEIN</div>
-        <div class="store-count">فشن سریع</div>
-      </div>
-      <div class="store-card">
-        <div class="store-icon" style="background:#7c3aed">N</div>
-        <div class="store-name">Namshi</div>
-        <div class="store-count">مد خاورمیانه</div>
-      </div>
-      <div class="store-card">
-        <div class="store-icon" style="background:#f5a623">N</div>
-        <div class="store-name">Noon</div>
-        <div class="store-count">کالاهای متنوع</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How it works -->
-  <section class="how-section" id="how">
-    <div class="section">
+    <!-- Featured -->
+    <section class="section">
       <div class="section-header">
-        <h2>چطور خرید کنیم؟</h2>
+        <div>
+          <h2 class="section-title">محصولات منتخب</h2>
+          <p class="section-sub" style="margin:0">پربازدیدترین‌های این هفته</p>
+        </div>
+        <a href="products.html">مشاهده همه ←</a>
       </div>
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">۱</div>
-          <h3>لینک محصول را پیدا کنید</h3>
-          <p>به فروشگاه خارجی بروید و لینک محصول دلخواه را کپی کنید</p>
-        </div>
-        <div class="step">
-          <div class="step-num">۲</div>
-          <h3>لینک را ثبت کنید</h3>
-          <p>لینک را در سایت ما وارد کنید تا قیمت نهایی محاسبه شود</p>
-        </div>
-        <div class="step">
-          <div class="step-num">۳</div>
-          <h3>پرداخت کنید</h3>
-          <p>با درگاه بانکی، دیجی‌پی یا اسنپ‌پی پرداخت را انجام دهید</p>
-        </div>
-        <div class="step">
-          <div class="step-num">۴</div>
-          <h3>تحویل بگیرید</h3>
-          <p>کالا پس از واردات و ترخیص، درب منزل شما تحویل می‌شود</p>
-        </div>
+      <div class="product-grid" id="featuredProducts"></div>
+    </section>
+  </main>
+
+  <footer class="footer">© ۱۴۰۵ فروشگاه · تمامی حقوق محفوظ است</footer>
+
+  <!-- Cart Drawer -->
+  <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+      <h3>سبد خرید</h3>
+      <button class="cart-close" onclick="closeCart()" aria-label="بستن">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="cart-total-bar">
+      <div class="cart-total-row" id="cartTotalRow">
+        <span class="cart-total-label">جمع کل</span>
+        <span class="cart-total-price" id="cartTotal">۰ تومان</span>
+      </div>
+      <button class="btn-checkout" onclick="showToast('درگاه پرداخت به‌زودی فعال می‌شود')">پرداخت</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+  </aside>
+
+  <!-- Product Modal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()" aria-label="بستن">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="modal-img" id="modalImg"></div>
+      <div class="modal-cat" id="modalCat"></div>
+      <div class="modal-name" id="modalName"></div>
+      <div class="modal-desc" id="modalDesc"></div>
+      <div class="modal-footer">
+        <div class="modal-price" id="modalPrice"></div>
+        <button class="btn-modal-add" id="modalAddBtn">افزودن به سبد</button>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Products -->
-  <section class="section" id="products">
-    <div class="section-header">
-      <h2>محصولات پربازدید</h2>
-      <a href="#">مشاهده همه ←</a>
-    </div>
-    <div class="products-grid">
-
-      <div class="product-card">
-        <div class="product-img">👟
-          <span class="product-badge">٪۲۵</span>
-          <span class="product-badge store">Trendyol</span>
-        </div>
-        <div class="product-body">
-          <div class="product-store">Trendyol</div>
-          <div class="product-title">کفش ورزشی مردانه نایک ایرمکس اصل</div>
-          <div class="product-price-row">
-            <div>
-              <span class="product-old-price">۴٬۸۰۰٬۰۰۰</span>
-              <span class="product-price">۳٬۶۰۰٬۰۰۰ تومان</span>
-            </div>
-            <button class="product-add">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">👗
-          <span class="product-badge new">جدید</span>
-          <span class="product-badge store">Zara</span>
-        </div>
-        <div class="product-body">
-          <div class="product-store">Zara</div>
-          <div class="product-title">مانتو بلند زنانه زارا مدل ۲۰۲۶</div>
-          <div class="product-price-row">
-            <div>
-              <span class="product-price">۲٬۱۵۰٬۰۰۰ تومان</span>
-            </div>
-            <button class="product-add">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">🎧
-          <span class="product-badge store">Amazon</span>
-        </div>
-        <div class="product-body">
-          <div class="product-store">Amazon</div>
-          <div class="product-title">هدفون بی‌سیم سونی WH-1000XM5</div>
-          <div class="product-price-row">
-            <div>
-              <span class="product-old-price">۱۲٬۵۰۰٬۰۰۰</span>
-              <span class="product-price">۹٬۹۰۰٬۰۰۰ تومان</span>
-            </div>
-            <button class="product-add">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">👜
-          <span class="product-badge">٪۱۵</span>
-          <span class="product-badge store">SHEIN</span>
-        </div>
-        <div class="product-body">
-          <div class="product-store">SHEIN</div>
-          <div class="product-title">کیف دوشی زنانه چرمی شین</div>
-          <div class="product-price-row">
-            <div>
-              <span class="product-old-price">۸۹۰٬۰۰۰</span>
-              <span class="product-price">۷۵۶٬۰۰۰ تومان</span>
-            </div>
-            <button class="product-add">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">👕
-          <span class="product-badge store">LC Waikiki</span>
-        </div>
-        <div class="product-body">
-          <div class="product-store">LC Waikiki</div>
-          <div class="product-title">ست لباس راحتی مردانه ال‌سی وایکیکی</div>
-          <div class="product-price-row">
-            <div>
-              <span class="product-price">۱٬۲۴۰٬۰۰۰ تومان</span>
-            </div>
-            <button class="product-add">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">⌚
-          <span class="product-badge new">جدید</span>
-          <span class="product-badge store">Noon</span>
-        </div>
-        <div class="product-body">
-          <div class="product-store">Noon</div>
-          <div class="product-title">ساعت هوشمند سامسونگ Galaxy Watch ۶</div>
-          <div class="product-price-row">
-            <div>
-              <span class="product-price">۷٬۸۰۰٬۰۰۰ تومان</span>
-            </div>
-            <button class="product-add">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">🧥
-          <span class="product-badge store">Koton</span>
-        </div>
-        <div class="product-body">
-          <div class="product-store">Koton</div>
-          <div class="product-title">کاپشن زمستانی مردانه کوتون</div>
-          <div class="product-price-row">
-            <div>
-              <span class="product-old-price">۳٬۲۰۰٬۰۰۰</span>
-              <span class="product-price">۲٬۷۵۰٬۰۰۰ تومان</span>
-            </div>
-            <button class="product-add">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">💄
-          <span class="product-badge">٪۳۰</span>
-          <span class="product-badge store">Namshi</span>
-        </div>
-        <div class="product-body">
-          <div class="product-store">Namshi</div>
-          <div class="product-title">ست آرایشی دیور اورجینال</div>
-          <div class="product-price-row">
-            <div>
-              <span class="product-old-price">۵٬۶۰۰٬۰۰۰</span>
-              <span class="product-price">۳٬۹۲۰٬۰۰۰ تومان</span>
-            </div>
-            <button class="product-add">+</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Benefits -->
-  <section class="section">
-    <div class="section-header">
-      <h2>چرا از ما خرید کنید؟</h2>
-    </div>
-    <div class="benefits-grid">
-      <div class="benefit-card">
-        <div class="benefit-icon" style="background:#eff6ff">🛡️</div>
-        <h3>تضمین اصالت کالا</h3>
-        <p>تمام محصولات مستقیماً از فروشگاه اصلی خریداری و با فاکتور ارسال می‌شوند</p>
-      </div>
-      <div class="benefit-card">
-        <div class="benefit-icon" style="background:#f0fdf4">💰</div>
-        <h3>قیمت شفاف و به‌روز</h3>
-        <p>قیمت‌ها بر اساس نرخ روز ارز و هزینه واقعی حمل محاسبه می‌شوند</p>
-      </div>
-      <div class="benefit-card">
-        <div class="benefit-icon" style="background:#fef3c7">🚚</div>
-        <h3>ارسال سریع و مطمئن</h3>
-        <p>پیگیری مرحله‌به‌مرحله سفارش از خرید تا تحویل درب منزل</p>
-      </div>
-      <div class="benefit-card">
-        <div class="benefit-icon" style="background:#fce7f3">💳</div>
-        <h3>پرداخت اقساطی</h3>
-        <p>امکان خرید با دیجی‌پی، اسنپ‌پی و سایر سرویس‌های اقساطی</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="cta-section">
-    <h2>همین حالا خرید از خارج را شروع کنید</h2>
-    <p>لینک محصول مورد نظرتان را وارد کنید و قیمت نهایی را ببینید</p>
-    <a href="#" class="cta-btn">ثبت لینک محصول</a>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <a href="#" class="logo">فروش<span style="color:#e2e8f0">گاه</span></a>
-        <p>پلتفرم خرید از فروشگاه‌های معتبر خارجی. ما واسط مطمئن شما برای خرید از Trendyol، Zara، Amazon، SHEIN و بیش از ۱۰ فروشگاه بین‌المللی هستیم.</p>
-      </div>
-      <div class="footer-col">
-        <h4>فروشگاه‌ها</h4>
-        <a href="#">Trendyol</a>
-        <a href="#">Zara</a>
-        <a href="#">Amazon</a>
-        <a href="#">SHEIN</a>
-        <a href="#">LC Waikiki</a>
-        <a href="#">Noon</a>
-      </div>
-      <div class="footer-col">
-        <h4>خدمات</h4>
-        <a href="#">پیگیری سفارش</a>
-        <a href="#">محاسبه هزینه</a>
-        <a href="#">قوانین گمرکی</a>
-        <a href="#">بازگشت کالا</a>
-        <a href="#">سوالات متداول</a>
-      </div>
-      <div class="footer-col">
-        <h4>ارتباط با ما</h4>
-        <a href="#">پشتیبانی آنلاین</a>
-        <a href="#">۰۲۱-۹۱۰۰۰۰۰۰</a>
-        <a href="#">info@example.com</a>
-        <a href="#">اینستاگرام</a>
-        <a href="#">تلگرام</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      © ۱۴۰۵ تمامی حقوق محفوظ است · طراحی و توسعه اختصاصی
-    </div>
-  </footer>
-
+  <script src="products-data.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
