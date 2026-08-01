@@ -3,11 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>فروشگاه | خانه</title>
+  <meta name="description" content="خرید از فروشگاه‌های خارجی Zara، Trendyol، Amazon و SHEIN با محاسبه قیمت شفاف و نرخ لحظه‌ای دلار، درهم و لیر" />
+  <meta name="theme-color" content="#0071e3" />
+  <title>فروشگاه | خرید از فروشگاه‌های خارجی</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="manifest.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body data-page="home">
@@ -15,85 +18,96 @@
     <div class="header-inner">
       <div class="header-right">
         <a href="index.html" class="logo">فروش<span>گاه</span></a>
-        <nav class="nav" id="mainNav">
-          <a href="index.html" class="active">خانه</a>
-          <a href="products.html">محصولات</a>
-          <a href="collections.html">مجموعه‌ها</a>
-          <a href="stores.html">فروشگاه‌ها</a>
-          <a href="calculator.html">محاسبه قیمت</a>
-          <a href="contact.html">تماس</a>
-        </nav>
+        <nav class="nav" id="mainNav"></nav>
       </div>
       <div class="header-left">
         <div class="search-wrap">
-          <button class="icon-btn" type="button" onclick="toggleSearch()" aria-label="جستجو"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
-          <input type="text" class="search-input" id="headerSearch" placeholder="جستجو..." />
+          <button class="icon-btn" type="button" aria-label="جستجو">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </button>
+          <input type="text" class="search-input" id="headerSearch" placeholder="جستجوی محصول..." autocomplete="off" />
         </div>
-        <button class="icon-btn" type="button" onclick="openCart()" aria-label="سبد خرید"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="cart-count" id="cartCount">0</span></button>
-        <button class="menu-toggle icon-btn" type="button" onclick="toggleMenu()" aria-label="منو"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+        <button class="icon-btn" type="button" onclick="openCart()" aria-label="سبد خرید">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+        <button class="menu-toggle icon-btn" type="button" onclick="toggleMenu()" aria-label="منو">☰</button>
       </div>
     </div>
   </header>
+
   <main class="page-fade">
     <section class="hero">
-      <div class="hero-badge">خرید از فروشگاه‌های خارجی</div>
+      <div class="hero-badge">خرید امن از ۱۰+ فروشگاه جهانی</div>
       <h1>از <em>Zara</em> تا <em>Amazon</em><br/>با قیمت شفاف</h1>
-      <p>لینک کالا را بفرستید، هزینه نهایی را ببینید و سفارش را ثبت کنید.</p>
-      <a href="calculator.html" class="btn-primary">محاسبه قیمت</a>
-      <a href="products.html" class="btn-primary" style="margin-right:8px;background:#fff;color:var(--brand);border:1px solid var(--brand)">محصولات</a>
+      <p>لینک کالا را بفرستید، هزینه نهایی را با دلار، درهم یا لیر ببینید و سفارش را ثبت کنید.</p>
+      <a href="calculator.html" class="btn-primary">شروع سفارش</a>
+      <a href="products.html" class="btn-primary" style="margin-right:10px;background:#fff;color:var(--brand);border:1.5px solid var(--brand);box-shadow:none">مشاهده محصولات</a>
     </section>
+
+    <div class="trust-bar">
+      <div class="trust-item"><div class="t-icon">🔒</div><h4>پرداخت امن</h4><p>درگاه‌های معتبر بانکی</p></div>
+      <div class="trust-item"><div class="t-icon">📦</div><h4>اصالت کالا</h4><p>خرید مستقیم از مبدا</p></div>
+      <div class="trust-item"><div class="t-icon">💱</div><h4>نرخ شفاف</h4><p>دلار، درهم و لیر</p></div>
+      <div class="trust-item"><div class="t-icon">🚀</div><h4>پیگیری سفارش</h4><p>از ثبت تا تحویل</p></div>
+    </div>
+
     <section class="section">
       <h2 class="section-title">دسته‌بندی‌ها</h2>
       <p class="section-sub">انتخاب سریع بر اساس نوع کالا</p>
       <div class="cat-grid" id="categoryGrid"></div>
     </section>
+
     <section class="section">
-      <div class="section-header"><div><h2 class="section-title">محصولات منتخب</h2><p class="section-sub">نمونه‌های قابل سفارش</p></div><a href="products.html">مشاهده همه ←</a></div>
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">محصولات منتخب</h2>
+          <p class="section-sub">نمونه‌های قابل سفارش از فروشگاه‌های خارجی</p>
+        </div>
+        <a href="products.html">مشاهده همه ←</a>
+      </div>
       <div class="product-grid" id="featuredProducts"></div>
     </section>
+
     <section class="section">
-      <h2 class="section-title">فروشگاه‌های خارجی</h2>
-      <p class="section-sub">لینک رسمی فروشگاه‌ها</p>
-      <div class="stores-links">
-        <a class="store-link" href="https://www.trendyol.com" target="_blank" rel="noopener">Trendyol</a>
-        <a class="store-link" href="https://www.zara.com" target="_blank" rel="noopener">Zara</a>
-        <a class="store-link" href="https://www.lcw.com" target="_blank" rel="noopener">LC Waikiki</a>
-        <a class="store-link" href="https://www.boyner.com.tr" target="_blank" rel="noopener">Boyner</a>
-        <a class="store-link" href="https://www.koton.com" target="_blank" rel="noopener">Koton</a>
-        <a class="store-link" href="https://www.defacto.com.tr" target="_blank" rel="noopener">Defacto</a>
-        <a class="store-link" href="https://www.amazon.com" target="_blank" rel="noopener">Amazon</a>
-        <a class="store-link" href="https://www.shein.com" target="_blank" rel="noopener">SHEIN</a>
-        <a class="store-link" href="https://www.namshi.com" target="_blank" rel="noopener">Namshi</a>
-        <a class="store-link" href="https://www.noon.com" target="_blank" rel="noopener">Noon</a>
+      <h2 class="section-title">چطور کار می‌کند؟</h2>
+      <p class="section-sub">چهار مرحله ساده تا رسیدن کالا</p>
+      <div class="steps-grid">
+        <div class="step-card"><span class="step-num">۱</span><h3>انتخاب کالا</h3><p>از محصولات سایت یا لینک فروشگاه خارجی</p></div>
+        <div class="step-card"><span class="step-num">۲</span><h3>محاسبه قیمت</h3><p>با دلار، درهم یا لیر و نرخ لحظه‌ای</p></div>
+        <div class="step-card"><span class="step-num">۳</span><h3>پرداخت</h3><p>ثبت سفارش و پرداخت امن آنلاین</p></div>
+        <div class="step-card"><span class="step-num">۴</span><h3>دریافت</h3><p>خرید از مبدا و ارسال تا درب منزل</p></div>
       </div>
-      <p style="margin-top:20px"><a href="stores.html" class="btn-primary">همه فروشگاه‌ها</a></p>
+      <p style="margin-top:24px;text-align:center"><a href="how-it-works.html" class="btn-primary">جزئیات بیشتر</a></p>
     </section>
   </main>
-  <footer class="footer">
-    <div class="footer-links">
-      <a href="index.html">خانه</a><a href="products.html">محصولات</a><a href="collections.html">مجموعه‌ها</a><a href="contact.html">تماس</a>
-      <a href="about.html">درباره ما</a><a href="how-it-works.html">نحوه سفارش</a><a href="shipping.html">ارسال</a><a href="calculator.html">محاسبه قیمت</a>
-      <a href="faq.html">سوالات متداول</a><a href="terms.html">قوانین</a><a href="privacy.html">حریم خصوصی</a><a href="stores.html">فروشگاه‌ها</a>
-      <a href="track-order.html">پیگیری سفارش</a><a href="payment.html">پرداخت</a><a href="offers.html">تخفیف‌ها</a><a href="support.html">پشتیبانی</a>
-      <a href="blog.html">بلاگ</a><a href="account.html">حساب کاربری</a><a href="checkout.html">تسویه حساب</a><a href="brands.html">برندها</a>
-    </div>
-    <p>© ۱۴۰۵ فروشگاه · خرید از فروشگاه‌های خارجی</p>
-  </footer>
+
+  <footer class="footer"></footer>
+
   <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
   <aside class="cart-drawer" id="cartDrawer">
     <div class="cart-header"><h3>سبد خرید</h3><button class="cart-close" type="button" onclick="closeCart()">×</button></div>
-    <div class="cart-total-bar"><div class="cart-total-row" id="cartTotalRow"><span class="cart-total-label">جمع کل</span><span class="cart-total-price" id="cartTotal">۰ تومان</span></div>
-    <button class="btn-checkout" type="button" onclick="location.href='checkout.html'">پرداخت</button></div>
+    <div class="cart-total-bar">
+      <div class="cart-total-row" id="cartTotalRow"><span class="cart-total-label">جمع کل</span><span class="cart-total-price" id="cartTotal">۰ تومان</span></div>
+      <button class="btn-checkout" type="button" onclick="location.href='checkout.html'">پرداخت</button>
+    </div>
     <div class="cart-items" id="cartItems"></div>
   </aside>
+
   <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
-    <div class="modal"><button class="modal-close" type="button" onclick="closeModal()">×</button>
-      <div class="modal-img" id="modalImg"></div><div class="modal-cat" id="modalCat"></div>
-      <div class="modal-name" id="modalName"></div><div class="modal-desc" id="modalDesc"></div>
-      <div class="modal-footer"><div class="modal-price" id="modalPrice"></div>
-      <button class="btn-modal-add" type="button" id="modalAddBtn">افزودن به سبد</button></div>
+    <div class="modal">
+      <button class="modal-close" type="button" onclick="closeModal()">×</button>
+      <div class="modal-img" id="modalImg"></div>
+      <div class="modal-cat" id="modalCat"></div>
+      <div class="modal-name" id="modalName"></div>
+      <div class="modal-desc" id="modalDesc"></div>
+      <div class="modal-footer">
+        <div class="modal-price" id="modalPrice"></div>
+        <button class="btn-modal-add" type="button" id="modalAddBtn">افزودن به سبد</button>
+      </div>
     </div>
   </div>
+
   <script src="products-data.js"></script>
   <script src="script.js"></script>
 </body>

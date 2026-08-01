@@ -1,13 +1,15 @@
-/* Navigation — clean, usable */
+/* Navigation + inject CSS layers */
 (function () {
-  // inject UX css once
-  if (!document.getElementById('ux-css')) {
+  function injectCss(href, id) {
+    if (document.getElementById(id)) return;
     var l = document.createElement('link');
-    l.id = 'ux-css';
+    l.id = id;
     l.rel = 'stylesheet';
-    l.href = 'ux.css';
+    l.href = href;
     document.head.appendChild(l);
   }
+  injectCss('styles-ui.css', 'styles-ui');
+  injectCss('ux.css', 'ux-css');
 
   var MAIN = [
     ['index.html', 'خانه'],
