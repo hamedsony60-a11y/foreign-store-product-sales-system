@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>فروشگاه | پرداخت موفق</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="content">
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-right">
+        <a href="index.html" class="logo">فروش<span>گاه</span></a>
+        <nav class="nav" id="mainNav">
+          <a href="index.html">خانه</a>
+          <a href="products.html">محصولات</a>
+          <a href="track-order.html">پیگیری سفارش</a>
+          <a href="contact.html">تماس</a>
+        </nav>
+      </div>
+      <div class="header-left">
+        <button class="menu-toggle icon-btn" onclick="toggleMenu()">☰</button>
+      </div>
+    </div>
+  </header>
+  <main class="page-fade">
+    <section class="section content-page" style="text-align:center">
+      <div class="content-card" style="max-width:480px;margin:40px auto">
+        <div style="font-size:3.5rem;margin-bottom:12px">✅</div>
+        <h1 class="section-title" style="text-align:center">پرداخت موفق</h1>
+        <p class="section-sub" style="text-align:center">سفارش شما ثبت شد</p>
+        <p>کد پیگیری: <strong id="orderCode">—</strong></p>
+        <p class="calc-note">رسید و جزئیات به شماره موبایل شما ارسال می‌شود (پس از اتصال سرویس پیامک).</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px">
+          <a href="track-order.html" class="btn-primary">پیگیری سفارش</a>
+          <a href="index.html" class="store-link">بازگشت به فروشگاه</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer"><p>© ۱۴۰۵ فروشگاه</p></footer>
+  <script src="products-data.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var code = localStorage.getItem('last_order_code') || ('ORD-' + Date.now().toString().slice(-8));
+      document.getElementById('orderCode').textContent = code;
+    });
+  </script>
+</body>
+</html>

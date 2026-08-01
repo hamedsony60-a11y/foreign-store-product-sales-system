@@ -1,14 +1,65 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>فروشگاه | پرداخت</title><link rel="icon" href="favicon.svg" type="image/svg+xml" />
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet" /><link rel="stylesheet" href="styles.css" /></head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>فروشگاه | روش‌های پرداخت</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
 <body data-page="content">
-<header class="header"><div class="header-inner"><div class="header-right"><a href="index.html" class="logo">فروش<span>گاه</span></a>
-<nav class="nav" id="mainNav"><a href="index.html">خانه</a><a href="products.html">محصولات</a><a href="contact.html">تماس</a></nav></div>
-<div class="header-left"><button class="menu-toggle icon-btn" onclick="toggleMenu()">☰</button></div></div></header>
-<main class="page-fade"><section class="section content-page"><h1 class="section-title">روش‌های پرداخت</h1>
-<div class="content-card"><ul class="content-list"><li>درگاه بانکی آنلاین (شتاب)</li><li>دیجی‌پی و سرویس‌های اقساطی</li><li>اسنپ‌پی و خرید اعتباری</li></ul>
-<p>پس از تأیید سفارش، لینک پرداخت امن ارسال می‌شود.</p></div></section></main>
-<footer class="footer"><p>© ۱۴۰۵ فروشگاه</p></footer>
-<script src="products-data.js"></script><script src="script.js"></script></body></html>
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-right">
+        <a href="index.html" class="logo">فروش<span>گاه</span></a>
+        <nav class="nav" id="mainNav">
+          <a href="index.html">خانه</a>
+          <a href="products.html">محصولات</a>
+          <a href="checkout.html">تسویه حساب</a>
+          <a href="contact.html">تماس</a>
+        </nav>
+      </div>
+      <div class="header-left">
+        <button class="icon-btn" onclick="openCart()"><span class="cart-count" id="cartCount">0</span></button>
+        <button class="menu-toggle icon-btn" onclick="toggleMenu()">☰</button>
+      </div>
+    </div>
+  </header>
+  <main class="page-fade">
+    <section class="section content-page">
+      <h1 class="section-title">روش‌های پرداخت</h1>
+      <p class="section-sub">درگاه‌های پشتیبانی‌شده برای اتصال نهایی</p>
+      <div class="steps-grid">
+        <div class="step-card">
+          <h3>زرین‌پال</h3>
+          <p>محبوب‌ترین درگاه ایران. با Merchant ID و API درخواست پرداخت ساخته می‌شود و کاربر به صفحه زرین‌پال هدایت می‌گردد.</p>
+        </div>
+        <div class="step-card">
+          <h3>آیدی‌پی (IDPay)</h3>
+          <p>درگاه جایگزین با API ساده. مناسب برای اتصال سمت سرور یا سرویس میانی.</p>
+        </div>
+        <div class="step-card">
+          <h3>نکست‌پی</h3>
+          <p>پرداخت بانکی سریع. پس از تأیید، callback به سایت شما بازمی‌گردد.</p>
+        </div>
+      </div>
+      <div class="content-card" style="margin-top:24px">
+        <h3 style="margin-top:0">نکته فنی</h3>
+        <p>سایت فعلی استاتیک است (GitHub Pages). برای پرداخت واقعی نیاز به یک بک‌اند کوچک (مثلاً Node یا PHP) دارید که:</p>
+        <ul class="content-list">
+          <li>مبلغ و سفارش را ثبت کند</li>
+          <li>از API درگاه Authority بگیرد</li>
+          <li>کاربر را به درگاه بفرستد</li>
+          <li>پس از بازگشت، پرداخت را Verify کند</li>
+        </ul>
+        <p>در نسخه فعلی، دکمه پرداخت یک <strong>شبیه‌ساز درگاه</strong> باز می‌کند تا جریان خرید کامل تست شود.</p>
+        <p style="margin-top:16px"><a href="checkout.html" class="btn-primary">رفتن به تسویه حساب</a></p>
+      </div>
+    </section>
+  </main>
+  <footer class="footer"><p>© ۱۴۰۵ فروشگاه</p></footer>
+  <script src="products-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
