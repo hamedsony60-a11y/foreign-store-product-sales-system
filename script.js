@@ -1,4 +1,4 @@
-/* Full shop — sync load parts so products work */
+/* Local full shop — products, cart, calculator, payment */
 (function () {
   function loadSync(url) {
     var xhr = new XMLHttpRequest();
@@ -10,6 +10,7 @@
       console.error('Load failed', url, xhr.status);
     }
   }
-  loadSync('script_part1.js');
-  loadSync('script_part2.js');
+  loadSync('sp1.js');
+  loadSync('sp2.js');
+  loadSync('sp3.js');
 })();
