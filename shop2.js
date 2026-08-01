@@ -82,9 +82,13 @@ function fetchUsdRate() {
 }
 var TARIFF = { default:0.12, amazon:0.15, shein:0.10, zara:0.12, lcw:0.10, boyner:0.12, koton:0.10, defacto:0.10, namshi:0.12, noon:0.12, trendyol:0.10 };
 function calculatePrice() {
-  var price = parseFloat(document.getElementById('calcPrice').value);
-  var weight = parseFloat(document.getElementById('calcWeight').value);
-  var store = document.getElementById('calcStore').value;
+  var priceEl = document.getElementById('calcPrice');
+  var weightEl = document.getElementById('calcWeight');
+  var storeEl = document.getElementById('calcStore');
+  if (!priceEl || !weightEl) return;
+  var price = parseFloat(priceEl.value);
+  var weight = parseFloat(weightEl.value);
+  var store = storeEl ? storeEl.value : 'zara';
   var link = (document.getElementById('calcLink')||{}).value || '';
   if (!price || price <= 0) { showToast('قیمت کالا را وارد کنید'); return; }
   if (!weight || weight <= 0) { showToast('وزن کالا را وارد کنید'); return; }
@@ -154,15 +158,22 @@ function completePayment(success) {
   window.location.href = 'payment-success.html';
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  updateCartUI();
-  var page = document.body.dataset.page;
-  if (page === 'home') { renderCategories(); renderFeatured(); showInstantRate(); fetchUsdRate(); }
-  else if (page === 'products') initProductsPage();
-  else if (page === 'collections') initCollectionsPage();
-  else if (page === 'checkout') renderCheckoutSummary();
-  else if (page === 'calculator') { showInstantRate(); fetchUsdRate(); }
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape') { closeModal(); closeCart(); }
-  });
+function bootShop() {
+  try {
+    updateCartUI();
+    var page = document.body && document.body.dataset.page;
+    if (page === 'home') { renderCategories(); renderFeatured(); showInstantRate(); fetchUsdRate(); }
+    else if (page === 'products') initProductsPage();
+    else if (page === 'collections') initCollectionsPage();
+    else if (page === 'checkout') renderCheckoutSummary();
+    else if (page === 'calculator') { showInstantRate(); fetchUsdRate(); }
+  } catch (err) { console.error(err); }
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootShop);
+} else {
+  bootShop();
+}
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') { closeModal(); closeCart(); }
 });
