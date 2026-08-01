@@ -7,6 +7,7 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="checkout.css" />
 </head>
 <body data-page="checkout">
   <header class="header">
@@ -98,7 +99,7 @@
             <span>جمع کل</span>
             <strong id="checkoutTotal">۰ تومان</strong>
           </div>
-          <p class="calc-note" style="margin-top:12px">با کلیک روی پرداخت به درگاه امن بانکی منتقل می‌شوید. پس از پرداخت موفق، به صفحه تأیید بازمی‌گردید.</p>
+          <p class="calc-note" style="margin-top:12px">با کلیک روی پرداخت، شبیه‌ساز درگاه باز می‌شود. برای اتصال واقعی به زرین‌پال نیاز به بک‌اند و Merchant ID است.</p>
         </div>
       </div>
     </section>
@@ -127,13 +128,12 @@
     <div class="cart-items" id="cartItems"></div>
   </aside>
 
-  <!-- شبیه‌ساز درگاه -->
   <div class="gateway-overlay" id="gatewayOverlay">
     <div class="gateway-box">
       <div class="gateway-logo" id="gatewayLogo">زرین‌پال</div>
       <p class="gateway-amount">مبلغ قابل پرداخت</p>
       <div class="gateway-price" id="gatewayPrice">۰ تومان</div>
-      <p class="gateway-hint">این یک شبیه‌ساز درگاه است. برای اتصال واقعی، Merchant ID را در تنظیمات قرار دهید.</p>
+      <p class="gateway-hint">این شبیه‌ساز درگاه است. برای اتصال واقعی، Merchant ID زرین‌پال را در بک‌اند تنظیم کنید.</p>
       <div class="gateway-actions">
         <button type="button" class="btn-primary" onclick="completePayment(true)">پرداخت موفق (تست)</button>
         <button type="button" class="btn-gateway-cancel" onclick="completePayment(false)">انصراف</button>
@@ -145,14 +145,17 @@
   <script src="script.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      renderCheckoutSummary();
-      document.querySelectorAll('.pay-method').forEach(function (el) {
-        el.addEventListener('click', function () {
-          document.querySelectorAll('.pay-method').forEach(function (m) { m.classList.remove('active'); });
-          el.classList.add('active');
-          el.querySelector('input').checked = true;
+      setTimeout(function () {
+        if (typeof renderCheckoutSummary === 'function') renderCheckoutSummary();
+        document.querySelectorAll('.pay-method').forEach(function (el) {
+          el.addEventListener('click', function () {
+            document.querySelectorAll('.pay-method').forEach(function (m) { m.classList.remove('active'); });
+            el.classList.add('active');
+            var input = el.querySelector('input');
+            if (input) input.checked = true;
+          });
         });
-      });
+      }, 800);
     });
   </script>
 </body>
