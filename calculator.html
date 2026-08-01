@@ -1,38 +1,92 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>فروشگاه | محاسبه قیمت</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>فروشگاه | سفارش از لینک</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body data-page="calculator">
-  <header class="header"><div class="header-inner">
-    <div class="header-right"><a href="index.html" class="logo">فروش<span>گاه</span></a>
-      <nav class="nav" id="mainNav">
-        <a href="index.html">خانه</a><a href="products.html">محصولات</a><a href="collections.html">مجموعه‌ها</a>
-        <a href="stores.html">فروشگاه‌ها</a><a href="calculator.html" class="active">محاسبه قیمت</a><a href="contact.html">تماس</a>
-      </nav></div>
-    <div class="header-left">
-      <div class="search-wrap"><button class="icon-btn" onclick="toggleSearch()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button><input type="text" class="search-input" id="headerSearch" placeholder="جستجو..." /></div>
-      <button class="icon-btn" onclick="openCart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="cart-count" id="cartCount">0</span></button>
-      <button class="menu-toggle icon-btn" onclick="toggleMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
-    </div></div></header>
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-right">
+        <a href="index.html" class="logo">فروش<span>گاه</span></a>
+        <nav class="nav" id="mainNav"></nav>
+      </div>
+      <div class="header-left">
+        <div class="search-wrap">
+          <button class="icon-btn" type="button" aria-label="جستجو">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </button>
+          <input type="text" class="search-input" id="headerSearch" placeholder="جستجوی محصول..." />
+        </div>
+        <button class="icon-btn" type="button" onclick="openCart()" aria-label="سبد">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+        <button class="menu-toggle icon-btn" type="button" onclick="toggleMenu()">☰</button>
+      </div>
+    </div>
+  </header>
+
   <main class="page-fade">
-    <section class="section" id="calculator">
-      <h1 class="section-title">محاسبه‌گر قیمت نهایی</h1>
-      <p class="section-sub">لینک، قیمت و وزن — با نرخ دلار لحظه‌ای</p>
-      <div class="calc-card">
-        <div class="calc-rate-bar"><span>نرخ دلار لحظه‌ای:</span><strong id="usdRateDisplay">در حال دریافت...</strong>
-          <button type="button" class="calc-refresh" onclick="fetchUsdRate()">↻</button></div>
+    <section class="section">
+      <h1 class="section-title">سفارش از فروشگاه خارجی</h1>
+      <p class="section-sub">فروشگاه را انتخاب کنید، لینک کالا را بگذارید، قیمت نهایی را ببینید</p>
+
+      <div class="order-stores">
+        <p class="order-stores-label">فروشگاه‌های پشتیبانی‌شده (کلیک = سایت رسمی)</p>
+        <div class="stores-links">
+          <a class="store-link" href="https://www.trendyol.com" target="_blank" rel="noopener">Trendyol</a>
+          <a class="store-link" href="https://www.zara.com" target="_blank" rel="noopener">Zara</a>
+          <a class="store-link" href="https://www.lcw.com" target="_blank" rel="noopener">LC Waikiki</a>
+          <a class="store-link" href="https://www.boyner.com.tr" target="_blank" rel="noopener">Boyner</a>
+          <a class="store-link" href="https://www.koton.com" target="_blank" rel="noopener">Koton</a>
+          <a class="store-link" href="https://www.defacto.com.tr" target="_blank" rel="noopener">Defacto</a>
+          <a class="store-link" href="https://www.amazon.com" target="_blank" rel="noopener">Amazon</a>
+          <a class="store-link" href="https://www.shein.com" target="_blank" rel="noopener">SHEIN</a>
+          <a class="store-link" href="https://www.namshi.com" target="_blank" rel="noopener">Namshi</a>
+          <a class="store-link" href="https://www.noon.com" target="_blank" rel="noopener">Noon</a>
+        </div>
+      </div>
+
+      <div class="calc-card" style="margin-top:24px">
+        <div class="calc-rate-bar">
+          <span>نرخ دلار (tgju.org):</span>
+          <strong id="usdRateDisplay">در حال دریافت...</strong>
+          <button type="button" class="calc-refresh" onclick="fetchUsdRate()" title="بروزرسانی از tgju.org">↻</button>
+        </div>
         <div class="calc-form">
-          <div class="form-group"><label for="calcStore">فروشگاه</label>
-            <select id="calcStore"><option value="zara">Zara</option><option value="lcw">LC Waikiki</option><option value="boyner">Boyner</option><option value="koton">Koton</option><option value="defacto">Defacto</option><option value="amazon">Amazon</option><option value="shein">SHEIN</option><option value="namshi">Namshi</option><option value="noon">Noon</option><option value="trendyol">Trendyol</option></select></div>
-          <div class="form-group"><label for="calcLink">لینک محصول</label><input type="url" id="calcLink" placeholder="لینک کالا را بچسبانید..." /></div>
+          <div class="form-group">
+            <label for="calcStore">فروشگاه مبدا</label>
+            <select id="calcStore">
+              <option value="zara">Zara</option>
+              <option value="trendyol">Trendyol</option>
+              <option value="lcw">LC Waikiki</option>
+              <option value="boyner">Boyner</option>
+              <option value="koton">Koton</option>
+              <option value="defacto">Defacto</option>
+              <option value="amazon">Amazon</option>
+              <option value="shein">SHEIN</option>
+              <option value="namshi">Namshi</option>
+              <option value="noon">Noon</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="calcLink">لینک محصول</label>
+            <input type="url" id="calcLink" placeholder="لینک کالا را از سایت فروشگاه بچسبانید..." />
+          </div>
           <div class="calc-row">
-            <div class="form-group"><label for="calcPrice">قیمت (دلار)</label><input type="number" id="calcPrice" min="0" step="0.01" placeholder="۴۹.۹۹" /></div>
-            <div class="form-group"><label for="calcWeight">وزن (کیلو)</label><input type="number" id="calcWeight" min="0" step="0.1" placeholder="۰.۵" /></div>
+            <div class="form-group">
+              <label for="calcPrice">قیمت (دلار)</label>
+              <input type="number" id="calcPrice" min="0" step="0.01" placeholder="۴۹.۹۹" />
+            </div>
+            <div class="form-group">
+              <label for="calcWeight">وزن (کیلوگرم)</label>
+              <input type="number" id="calcWeight" min="0" step="0.1" placeholder="۰.۵" />
+            </div>
           </div>
           <button type="button" class="btn-primary calc-btn" onclick="calculatePrice()">محاسبه قیمت نهایی</button>
         </div>
@@ -42,17 +96,32 @@
             <div class="calc-line"><span>قیمت کالا</span><strong id="rProduct">—</strong></div>
             <div class="calc-line"><span>حمل بین‌المللی</span><strong id="rShipping">—</strong></div>
             <div class="calc-line"><span>تعرفه</span><strong id="rTariff">—</strong></div>
-            <div class="calc-line"><span>کارمزد</span><strong id="rFee">—</strong></div>
+            <div class="calc-line"><span>کارمزد خدمات</span><strong id="rFee">—</strong></div>
             <div class="calc-line total"><span>جمع نهایی</span><strong id="rTotal">—</strong></div>
           </div>
           <p class="calc-note" id="calcNote"></p>
+          <p style="margin-top:16px">
+            <a href="checkout.html" class="btn-primary">ادامه به تسویه حساب</a>
+            <a href="how-it-works.html" class="store-link" style="margin-right:8px">نحوه سفارش</a>
+          </p>
         </div>
       </div>
     </section>
   </main>
-  <footer class="footer"><div class="footer-links"><a href="about.html">درباره ما</a><a href="faq.html">سوالات</a><a href="terms.html">قوانین</a></div><p>© ۱۴۰۵ فروشگاه</p></footer>
+
+  <footer class="footer"></footer>
+
   <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-  <aside class="cart-drawer" id="cartDrawer"><div class="cart-header"><h3>سبد</h3><button class="cart-close" onclick="closeCart()">×</button></div><div class="cart-total-bar"><div class="cart-total-row" id="cartTotalRow"><span class="cart-total-label">جمع</span><span class="cart-total-price" id="cartTotal">۰ تومان</span></div><button class="btn-checkout" onclick="location.href='checkout.html'">پرداخت</button></div><div class="cart-items" id="cartItems"></div></aside>
-  <script src="products-data.js"></script><script src="script.js"></script>
-  <script>document.addEventListener('DOMContentLoaded',function(){if(typeof fetchUsdRate==='function')fetchUsdRate();});</script>
-</body></html>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-header"><h3>سبد خرید</h3><button class="cart-close" type="button" onclick="closeCart()">×</button></div>
+    <div class="cart-total-bar">
+      <div class="cart-total-row" id="cartTotalRow"><span class="cart-total-label">جمع کل</span><span class="cart-total-price" id="cartTotal">۰ تومان</span></div>
+      <button class="btn-checkout" type="button" onclick="location.href='checkout.html'">پرداخت</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+  </aside>
+
+  <script src="products-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
