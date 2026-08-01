@@ -52,6 +52,7 @@ function handleContact(e) { e.preventDefault(); showToast('پیام شما ار�
 var MIN_VALID_TOMAN = 150000;
 var MAX_VALID_TOMAN = 500000;
 var rateFetching = false;
+var TGJU_PAGE = 'https://www.tgju.org/profile/price_dollar_rl';
 
 function parseToToman(raw) {
   if (raw == null) return null;
@@ -66,157 +67,127 @@ function parseToToman(raw) {
   if (n > 1000000) return Math.round(n / 10);
   return Math.round(n);
 }
-
 function isValidRate(t) {
   return t && t >= MIN_VALID_TOMAN && t <= MAX_VALID_TOMAN;
 }
-
 function applyUsdRate(toman, source) {
   toman = parseToToman(toman);
   if (!isValidRate(toman)) return false;
   usdRate = toman;
   localStorage.setItem('usd_free_rate', String(toman));
-  localStorage.setItem('usd_rate_source', source || '');
+  localStorage.setItem('usd_rate_source', source || 'tgju.org');
   localStorage.setItem('usd_rate_time', new Date().toISOString());
   var el = document.getElementById('usdRateDisplay');
   if (el) {
     var now = new Date();
     var time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-    el.textContent = toman.toLocaleString('fa-IR') + ' تومان — ' + (source || 'بازار') + ' ' + time;
+    el.innerHTML = toman.toLocaleString('fa-IR') + ' تومان <small style="opacity:.75">(tgju.org ' + time + ')</small>';
   }
   return true;
 }
-
 function showInstantRate() {
   var cached = Number(localStorage.getItem('usd_free_rate') || 0);
-  var t = localStorage.getItem('usd_rate_time');
-  var age = t ? (Date.now() - new Date(t).getTime()) : 1e15;
-  if (isValidRate(cached) && age < 2 * 60 * 60 * 1000) {
-    applyUsdRate(cached, localStorage.getItem('usd_rate_source') || 'کش');
-  } else {
-    if (!isValidRate(cached)) {
-      localStorage.removeItem('usd_free_rate');
-      localStorage.removeItem('usd_rate_source');
-    }
-    applyUsdRate(usdRate >= MIN_VALID_TOMAN ? usdRate : 194500, 'برآورد');
-  }
+  if (isValidRate(cached)) applyUsdRate(cached, localStorage.getItem('usd_rate_source') || 'tgju.org');
+  else applyUsdRate(usdRate >= MIN_VALID_TOMAN ? usdRate : 194500, 'برآورد');
 }
-
 function fetchWithTimeout(url, ms) {
-  ms = ms || 10000;
+  ms = ms || 12000;
   var ctrl = new AbortController();
   var timer = setTimeout(function(){ ctrl.abort(); }, ms);
-  return fetch(url, { cache: 'no-store', signal: ctrl.signal })
-    .then(function(res){
-      clearTimeout(timer);
-      if (!res.ok) throw new Error('http');
-      return res;
-    })
+  return fetch(url, { cache: 'no-store', signal: ctrl.signal, mode: 'cors' })
+    .then(function(res){ clearTimeout(timer); if (!res.ok) throw new Error('http'); return res; })
     .catch(function(e){ clearTimeout(timer); throw e; });
 }
-
-function tryNavasan(url, label) {
-  return fetchWithTimeout(url, 8000).then(function(r){ return r.json(); }).then(function(data){
-    var v = data && data.usd && data.usd.value;
-    var t = parseToToman(v);
-    if (!isValidRate(t)) throw new Error('bad');
-    return { rate: t, source: label };
-  });
-}
-
-function tryTgjuAjax(host) {
-  return fetchWithTimeout(host + '/ajax.json?t=' + Date.now(), 8000)
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      var p = data && data.current && data.current.price_dollar_rl && data.current.price_dollar_rl.p;
-      var t = parseToToman(p);
-      if (!isValidRate(t)) throw new Error('bad');
-      return { rate: t, source: 'tgju' };
-    });
-}
-
-function tryTgjuProxy() {
-  var target = encodeURIComponent('https://call5.tgju.org/ajax.json?t=' + Date.now());
-  return fetchWithTimeout('https://api.allorigins.win/raw?url=' + target, 12000)
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      var p = data && data.current && data.current.price_dollar_rl && data.current.price_dollar_rl.p;
-      var t = parseToToman(p);
-      if (!isValidRate(t)) throw new Error('bad');
-      return { rate: t, source: 'tgju' };
-    });
-}
-
-function tryTgjuHtml() {
-  var target = encodeURIComponent('https://www.tgju.org/profile/price_dollar_rl');
-  return fetchWithTimeout('https://api.allorigins.win/raw?url=' + target, 15000)
-    .then(function(r){ return r.text(); })
-    .then(function(html){
-      var m = html.match(/info-price[^>]*>\s*([0-9,۰-۹]+)/) ||
-              html.match(/data-price="(\d+)"/) ||
-              html.match(/>([0-9]{2,3},[0-9]{3},[0-9]{3})</);
-      if (!m) throw new Error('no price');
+function extractRateFromTgjuHtml(html) {
+  if (!html || html.length < 100) return null;
+  var patterns = [
+    /info-price[^>]*>\s*([0-9,۰-۹\s]+)/i,
+    /data-price=["'](\d+)["']/i,
+    /price_dollar_rl[\s\S]{0,200}?([0-9]{2,3},[0-9]{3},[0-9]{3})/i,
+    />([0-9]{2,3},[0-9]{3},[0-9]{3})</g,
+    /"p"\s*:\s*"([0-9,]+)"/
+  ];
+  for (var i = 0; i < patterns.length; i++) {
+    var m = html.match(patterns[i]);
+    if (m && m[1]) {
       var t = parseToToman(m[1]);
-      if (!isValidRate(t)) throw new Error('bad');
-      return { rate: t, source: 'tgju.org' };
-    });
+      if (isValidRate(t)) return t;
+    }
+  }
+  var all = html.match(/[0-9]{2,3},[0-9]{3},[0-9]{3}/g) || [];
+  for (var j = 0; j < all.length; j++) {
+    var t2 = parseToToman(all[j]);
+    if (isValidRate(t2)) return t2;
+  }
+  return null;
+}
+function extractRateFromTgjuJson(data) {
+  try {
+    var p = data && data.current && data.current.price_dollar_rl && data.current.price_dollar_rl.p;
+    return parseToToman(p);
+  } catch (e) { return null; }
 }
 
-function median(nums) {
-  nums = nums.slice().sort(function(a,b){ return a-b; });
-  var m = Math.floor(nums.length / 2);
-  return nums.length % 2 ? nums[m] : Math.round((nums[m-1] + nums[m]) / 2);
-}
-
+/* دکمه ↻ — فقط از tgju.org می‌گیرد */
 function fetchUsdRate() {
   if (rateFetching) return;
   rateFetching = true;
-  showInstantRate();
   var el = document.getElementById('usdRateDisplay');
-  if (el) el.style.opacity = '0.7';
+  if (el) el.textContent = 'در حال دریافت از tgju.org...';
+  showToast('در حال گرفتن نرخ از tgju.org');
 
-  var tasks = [
-    tryNavasan('https://cdn.jsdelivr.net/gh/HosseinOdd/Navasan-API@main/data/fiat.json', 'بازار آزاد'),
-    tryNavasan('https://raw.githubusercontent.com/HosseinOdd/Navasan-API/main/data/fiat.json', 'بازار آزاد'),
-    tryTgjuAjax('https://call5.tgju.org'),
-    tryTgjuAjax('https://call1.tgju.org'),
-    tryTgjuProxy(),
-    tryTgjuHtml()
+  var pageEnc = encodeURIComponent(TGJU_PAGE);
+  var ajaxEnc = encodeURIComponent('https://call5.tgju.org/ajax.json?t=' + Date.now());
+
+  var attempts = [
+    // صفحه اصلی مورد نظر کاربر
+    function(){ return fetchWithTimeout('https://api.allorigins.win/raw?url=' + pageEnc, 15000).then(function(r){ return r.text(); }).then(function(html){
+      var t = extractRateFromTgjuHtml(html);
+      if (!isValidRate(t)) throw new Error('parse');
+      return t;
+    }); },
+    function(){ return fetchWithTimeout('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(TGJU_PAGE), 15000).then(function(r){ return r.text(); }).then(function(html){
+      var t = extractRateFromTgjuHtml(html);
+      if (!isValidRate(t)) throw new Error('parse');
+      return t;
+    }); },
+    // API خود tgju (همان نرخ صفحه)
+    function(){ return fetchWithTimeout('https://api.allorigins.win/raw?url=' + ajaxEnc, 12000).then(function(r){ return r.json(); }).then(function(data){
+      var t = extractRateFromTgjuJson(data);
+      if (!isValidRate(t)) throw new Error('parse');
+      return t;
+    }); },
+    function(){ return fetchWithTimeout('https://call5.tgju.org/ajax.json?t=' + Date.now(), 8000).then(function(r){ return r.json(); }).then(function(data){
+      var t = extractRateFromTgjuJson(data);
+      if (!isValidRate(t)) throw new Error('parse');
+      return t;
+    }); },
+    function(){ return fetchWithTimeout('https://call1.tgju.org/ajax.json?t=' + Date.now(), 8000).then(function(r){ return r.json(); }).then(function(data){
+      var t = extractRateFromTgjuJson(data);
+      if (!isValidRate(t)) throw new Error('parse');
+      return t;
+    }); }
   ];
 
-  var rates = [];
-  var sources = [];
-  var pending = tasks.length;
-
-  function finish() {
-    rateFetching = false;
-    if (el) el.style.opacity = '1';
-    if (!rates.length) {
-      showToast('نرخ آنلاین در دسترس نیست — از آخرین نرخ استفاده شد');
+  var i = 0;
+  function next() {
+    if (i >= attempts.length) {
+      rateFetching = false;
+      showInstantRate();
+      showToast('اتصال به tgju.org برقرار نشد — دوباره ↻ را بزن');
       return;
     }
-    var finalRate = rates.length >= 2 ? median(rates) : rates[0];
-    var src = sources[0] || 'بازار';
-    if (applyUsdRate(finalRate, src)) {
-      showToast('نرخ دلار: ' + finalRate.toLocaleString('fa-IR') + ' تومان');
-    }
-  }
-
-  tasks.forEach(function(p){
-    p.then(function(r){
-      if (r && isValidRate(r.rate)) {
-        rates.push(r.rate);
-        sources.push(r.source);
+    var fn = attempts[i++];
+    fn().then(function(rate){
+      rateFetching = false;
+      if (applyUsdRate(rate, 'tgju.org')) {
+        showToast('نرخ tgju.org: ' + rate.toLocaleString('fa-IR') + ' تومان');
+      } else {
+        next();
       }
-    }).catch(function(){}).then(function(){
-      pending--;
-      if (pending === 0) finish();
-    });
-  });
-
-  setTimeout(function(){
-    if (rateFetching) finish();
-  }, 18000);
+    }).catch(function(){ next(); });
+  }
+  next();
 }
 
 var TARIFF = { default:0.12, amazon:0.15, shein:0.10, zara:0.12, lcw:0.10, boyner:0.12, koton:0.10, defacto:0.10, namshi:0.12, noon:0.12, trendyol:0.10 };
@@ -242,7 +213,7 @@ function calculatePrice() {
   document.getElementById('rTariff').textContent = formatPrice(tariff) + ' (' + Math.round(tariffRate*100) + '٪)';
   document.getElementById('rFee').textContent = formatPrice(fee);
   document.getElementById('rTotal').textContent = formatPrice(total);
-  document.getElementById('calcNote').textContent = 'محاسبه با نرخ لحظه‌ای ' + usdRate.toLocaleString('fa-IR') + ' تومان' + (link ? ' — لینک ثبت شد' : '');
+  document.getElementById('calcNote').textContent = 'محاسبه با نرخ tgju.org: ' + usdRate.toLocaleString('fa-IR') + ' تومان' + (link ? ' — لینک ثبت شد' : '');
   document.getElementById('calcResult').hidden = false;
 }
 function renderCheckoutSummary() {
