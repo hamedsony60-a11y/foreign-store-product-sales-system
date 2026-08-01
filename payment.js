@@ -2,9 +2,9 @@ function renderCheckoutSummary() {
   var box = document.getElementById('checkoutItems');
   var totalEl = document.getElementById('checkoutTotal');
   if (!box) return;
-  if (!cart.length) {
+  if (typeof cart === 'undefined' || !cart.length) {
     box.innerHTML = '<p class="calc-note">سبد خرید خالی است. <a href="products.html" style="color:var(--brand)">مشاهده محصولات</a></p>';
-    if (totalEl) totalEl.textContent = formatPrice(0);
+    if (totalEl && typeof formatPrice === 'function') totalEl.textContent = formatPrice(0);
     return;
   }
   box.innerHTML = cart.map(function (item) {
@@ -63,22 +63,3 @@ function completePayment(success) {
   saveCart();
   window.location.href = 'payment-success.html';
 }
-
-/* after core loads, init extra pages */
-(function () {
-  function extraInit() {
-    var page = document.body && document.body.dataset.page;
-    if (page === 'checkout' && typeof renderCheckoutSummary === 'function') {
-      renderCheckoutSummary();
-    }
-    if (page === 'calculator') {
-      if (typeof showInstantRate === 'function') showInstantRate();
-      if (typeof fetchUsdRate === 'function') fetchUsdRate();
-    }
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { setTimeout(extraInit, 50); });
-  } else {
-    setTimeout(extraInit, 50);
-  }
-})();
