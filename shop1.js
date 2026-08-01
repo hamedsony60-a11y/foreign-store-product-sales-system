@@ -1,6 +1,14 @@
 /* Shop core part 1 */
 var cart = JSON.parse(localStorage.getItem('shop_cart') || '[]');
-var usdRate = Number(localStorage.getItem('usd_free_rate') || 0) || 193500;
+(function(){
+  var old = Number(localStorage.getItem('usd_free_rate') || 0);
+  if (old && old < 150000) {
+    localStorage.removeItem('usd_free_rate');
+    localStorage.removeItem('usd_rate_source');
+    localStorage.removeItem('usd_rate_time');
+  }
+})();
+var usdRate = Number(localStorage.getItem('usd_free_rate') || 0) || 194500;
 
 function saveCart() {
   localStorage.setItem('shop_cart', JSON.stringify(cart));
