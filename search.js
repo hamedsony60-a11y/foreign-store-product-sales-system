@@ -14,7 +14,6 @@
     var btn = document.querySelector('.search-wrap .icon-btn');
     if (!input) return;
 
-    // Enter key
     input.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -22,46 +21,43 @@
       }
     });
 
-    // Click magnifier: if closed → open; if open with text → search; if open empty → close
     if (btn) {
       btn.onclick = function (e) {
         e.preventDefault();
         e.stopPropagation();
         if (!input.classList.contains('open')) {
           input.classList.add('open');
-          input.focus();
+          setTimeout(function () { input.focus(); }, 50);
           return;
         }
-        if (input.value.trim()) {
-          goSearch(input.value);
-        } else {
-          input.classList.remove('open');
-        }
+        if (input.value.trim()) goSearch(input.value);
+        else input.classList.remove('open');
       };
     }
 
-    // Close when clicking outside
     document.addEventListener('click', function (e) {
       var wrap = document.querySelector('.search-wrap');
       if (!wrap || !input.classList.contains('open')) return;
-      if (!wrap.contains(e.target)) {
-        input.classList.remove('open');
-      }
+      if (!wrap.contains(e.target)) input.classList.remove('open');
     });
   }
 
-  // products page: apply ?q=
   function applyQueryOnProducts() {
-    if (!document.body || document.body.dataset.page !== 'products') return;
     var params = new URLSearchParams(window.location.search);
     var q = params.get('q');
     if (!q) return;
-    var searchEl = document.getElementById('productSearch');
-    if (searchEl) {
-      searchEl.value = q;
+
+    // products page filter
+    try {
       if (typeof searchQuery !== 'undefined') searchQuery = q;
+      var searchEl = document.getElementById('productSearch');
+      if (searchEl) {
+        searchEl.value = q;
+        searchEl.dispatchEvent(new Event('input'));
+      }
       if (typeof applyFilters === 'function') applyFilters();
-    }
+    } catch (err) {}
+
     var header = document.getElementById('headerSearch');
     if (header) {
       header.classList.add('open');
@@ -71,20 +67,21 @@
 
   function run() {
     bindSearch();
-    setTimeout(applyQueryOnProducts, 200);
+    // wait for shop2 boot
+    setTimeout(applyQueryOnProducts, 100);
+    setTimeout(applyQueryOnProducts, 400);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();
 })();
 
-// keep global for old onclick
 function toggleSearch() {
   var input = document.getElementById('headerSearch');
   if (!input) return;
   if (!input.classList.contains('open')) {
     input.classList.add('open');
-    input.focus();
+    setTimeout(function () { input.focus(); }, 50);
   } else if (input.value.trim()) {
     window.location.href = 'products.html?q=' + encodeURIComponent(input.value.trim());
   } else {
