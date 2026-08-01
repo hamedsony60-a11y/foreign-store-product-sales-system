@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>فروشگاه | فروشگاه‌های خارجی</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="content">
+  <header class="header"><div class="header-inner">
+    <div class="header-right"><a href="index.html" class="logo">فروش<span>گاه</span></a>
+      <nav class="nav" id="mainNav">
+        <a href="index.html">خانه</a><a href="products.html">محصولات</a><a href="collections.html">مجموعه‌ها</a>
+        <a href="stores.html" class="active">فروشگاه‌ها</a><a href="calculator.html">محاسبه قیمت</a><a href="contact.html">تماس</a>
+      </nav></div>
+    <div class="header-left">
+      <div class="search-wrap"><button class="icon-btn" onclick="toggleSearch()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button><input type="text" class="search-input" id="headerSearch" placeholder="جستجو..." /></div>
+      <button class="icon-btn" onclick="openCart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="cart-count" id="cartCount">0</span></button>
+      <button class="menu-toggle icon-btn" onclick="toggleMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+    </div></div></header>
+  <main class="page-fade"><section class="section content-page">
+    <h1 class="section-title">فروشگاه‌های خارجی</h1>
+    <p class="section-sub">با کلیک به سایت رسمی فروشگاه می‌روید</p>
+    <div class="stores-links">
+      <a class="store-link" href="https://www.trendyol.com" target="_blank" rel="noopener">Trendyol</a>
+      <a class="store-link" href="https://www.zara.com" target="_blank" rel="noopener">Zara</a>
+      <a class="store-link" href="https://www.lcw.com" target="_blank" rel="noopener">LC Waikiki</a>
+      <a class="store-link" href="https://www.boyner.com.tr" target="_blank" rel="noopener">Boyner</a>
+      <a class="store-link" href="https://www.koton.com" target="_blank" rel="noopener">Koton</a>
+      <a class="store-link" href="https://www.defacto.com.tr" target="_blank" rel="noopener">Defacto</a>
+      <a class="store-link" href="https://www.amazon.com" target="_blank" rel="noopener">Amazon</a>
+      <a class="store-link" href="https://www.shein.com" target="_blank" rel="noopener">SHEIN</a>
+      <a class="store-link" href="https://www.namshi.com" target="_blank" rel="noopener">Namshi</a>
+      <a class="store-link" href="https://www.noon.com" target="_blank" rel="noopener">Noon</a>
+    </div>
+    <p style="margin-top:28px"><a href="calculator.html" class="btn-primary">محاسبه قیمت از لینک فروشگاه</a></p>
+  </section></main>
+  <footer class="footer"><div class="footer-links"><a href="about.html">درباره ما</a><a href="how-it-works.html">نحوه سفارش</a><a href="shipping.html">ارسال</a><a href="faq.html">سوالات</a><a href="terms.html">قوانین</a><a href="privacy.html">حریم خصوصی</a></div><p>© ۱۴۰۵ فروشگاه</p></footer>
+  <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+  <aside class="cart-drawer" id="cartDrawer"><div class="cart-header"><h3>سبد خرید</h3><button class="cart-close" onclick="closeCart()">×</button></div><div class="cart-total-bar"><div class="cart-total-row" id="cartTotalRow"><span class="cart-total-label">جمع</span><span class="cart-total-price" id="cartTotal">۰ تومان</span></div><button class="btn-checkout" onclick="location.href='checkout.html'">پرداخت</button></div><div class="cart-items" id="cartItems"></div></aside>
+  <script src="products-data.js"></script><script src="script.js"></script>
+</body></html>

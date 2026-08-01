@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>فروشگاه | درباره ما</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="content">
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-right">
+        <a href="index.html" class="logo">فروش<span>گاه</span></a>
+        <nav class="nav" id="mainNav">
+          <a href="index.html">خانه</a>
+          <a href="products.html">محصولات</a>
+          <a href="collections.html">مجموعه‌ها</a>
+          <a href="stores.html">فروشگاه‌ها</a>
+          <a href="calculator.html">محاسبه قیمت</a>
+          <a href="contact.html">تماس</a>
+        </nav>
+      </div>
+      <div class="header-left">
+        <div class="search-wrap">
+          <button class="icon-btn" onclick="toggleSearch()" aria-label="جستجو">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </button>
+          <input type="text" class="search-input" id="headerSearch" placeholder="جستجو..." />
+        </div>
+        <button class="icon-btn" onclick="openCart()" aria-label="سبد خرید">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+        <button class="menu-toggle icon-btn" onclick="toggleMenu()" aria-label="منو">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-fade">
+    <section class="section content-page">
+      <h1 class="section-title">درباره ما</h1>
+      <p class="section-sub">فروشگاه تخصصی خرید از فروشگاه‌های خارجی</p>
+      <div class="content-card">
+        <p>ما یک سیستم خرید از فروشگاه‌های معتبر جهانی مانند Zara، Trendyol، Amazon، SHEIN و ... هستیم. هدف ما این است که محصولات اصل را با قیمت شفاف، محاسبه هزینه کامل و ارسال مطمئن در اختیار شما قرار دهیم.</p>
+        <p>تیم ما تجربه سال‌ها فعالیت در حوزه واردات و سفارش آنلاین دارد و تلاش می‌کند فرآیند خرید را ساده، سریع و قابل اعتماد کند.</p>
+        <ul class="content-list">
+          <li>اصالت کالا و ضمانت تطابق با لینک فروشگاه مبدا</li>
+          <li>محاسبه قیمت بر اساس نرخ دلار لحظه‌ای بازار آزاد</li>
+          <li>پشتیبانی در تمام مراحل سفارش تا تحویل</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="about.html">درباره ما</a>
+      <a href="how-it-works.html">نحوه سفارش</a>
+      <a href="shipping.html">ارسال</a>
+      <a href="payment.html">پرداخت</a>
+      <a href="faq.html">سوالات متداول</a>
+      <a href="track-order.html">پیگیری سفارش</a>
+      <a href="offers.html">تخفیف‌ها</a>
+      <a href="brands.html">برندها</a>
+      <a href="blog.html">بلاگ</a>
+      <a href="support.html">پشتیبانی</a>
+      <a href="account.html">حساب کاربری</a>
+      <a href="checkout.html">تسویه حساب</a>
+      <a href="terms.html">قوانین</a>
+      <a href="privacy.html">حریم خصوصی</a>
+    </div>
+    <p>© ۱۴۰۵ فروشگاه · تمامی حقوق محفوظ است</p>
+  </footer>
+
+  <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+      <h3>سبد خرید</h3>
+      <button class="cart-close" onclick="closeCart()" aria-label="بستن">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="cart-total-bar">
+      <div class="cart-total-row" id="cartTotalRow">
+        <span class="cart-total-label">جمع کل</span>
+        <span class="cart-total-price" id="cartTotal">۰ تومان</span>
+      </div>
+      <button class="btn-checkout" onclick="location.href='checkout.html'">پرداخت</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+  </aside>
+
+  <script src="products-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
