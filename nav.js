@@ -1,4 +1,4 @@
-/* Navigation + inject CSS layers */
+/* Navigation + inject CSS/fonts site-wide */
 (function () {
   function injectCss(href, id) {
     if (document.getElementById(id)) return;
@@ -8,6 +8,8 @@
     l.href = href;
     document.head.appendChild(l);
   }
+  // فونت فارسی پایدار (jsDelivr) — قبل از بقیه
+  injectCss('fonts.css', 'fonts-css');
   injectCss('styles-ui.css', 'styles-ui');
   injectCss('ux.css', 'ux-css');
 
@@ -33,7 +35,7 @@
     {
       title: 'سفارش',
       links: [
-        ['calculator.html', 'سفارش از لینک'],
+        ['calculator.html', 'محاسبه قیمت'],
         ['how-it-works.html', 'نحوه کار'],
         ['shipping.html', 'ارسال'],
         ['track-order.html', 'پیگیری'],

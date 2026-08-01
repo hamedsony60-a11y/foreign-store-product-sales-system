@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="خرید از فروشگاه‌های خارجی Zara، Trendyol، Amazon و SHEIN با محاسبه قیمت شفاف و نرخ لحظه‌ای دلار، درهم و لیر" />
+  <meta name="description" content="خرید از فروشگاه‌های خارجی با محاسبه قیمت شفاف — دلار، درهم، لیر" />
   <meta name="theme-color" content="#0071e3" />
   <title>فروشگاه | خرید از فروشگاه‌های خارجی</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="fonts.css" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles-ui.css" />
 </head>
 <body data-page="home">
   <header class="header">
@@ -41,8 +40,10 @@
       <div class="hero-badge">خرید امن از ۱۰+ فروشگاه جهانی</div>
       <h1>از <em>Zara</em> تا <em>Amazon</em><br/>با قیمت شفاف</h1>
       <p>لینک کالا را بفرستید، هزینه نهایی را با دلار، درهم یا لیر ببینید و سفارش را ثبت کنید.</p>
-      <a href="calculator.html" class="btn-primary">شروع سفارش</a>
-      <a href="products.html" class="btn-primary" style="margin-right:10px;background:#fff;color:var(--brand);border:1.5px solid var(--brand);box-shadow:none">مشاهده محصولات</a>
+      <div class="hero-actions">
+        <a href="calculator.html" class="btn-primary">محاسبه قیمت</a>
+        <a href="products.html" class="btn-secondary">محصولات</a>
+      </div>
     </section>
 
     <div class="trust-bar">
@@ -64,7 +65,7 @@
           <h2 class="section-title">محصولات منتخب</h2>
           <p class="section-sub">نمونه‌های قابل سفارش از فروشگاه‌های خارجی</p>
         </div>
-        <a href="products.html">مشاهده همه ←</a>
+        <a href="products.html">همه محصولات ←</a>
       </div>
       <div class="product-grid" id="featuredProducts"></div>
     </section>
