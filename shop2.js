@@ -49,37 +49,176 @@ function initCollectionsPage() {
 }
 function handleContact(e) { e.preventDefault(); showToast('پیام شما ارسال شد'); e.target.reset(); }
 
-var MIN_VALID_TOMAN = 100000;
+var MIN_VALID_TOMAN = 150000;
+var MAX_VALID_TOMAN = 500000;
+var rateFetching = false;
+
+function parseToToman(raw) {
+  if (raw == null) return null;
+  if (typeof raw === 'number') {
+    if (raw > 1000000) return Math.round(raw / 10);
+    return Math.round(raw);
+  }
+  var s = String(raw).replace(/[۰-۹]/g, function(d){ return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); });
+  s = s.replace(/,/g, '').replace(/[^\d.]/g, '');
+  var n = parseFloat(s);
+  if (!n) return null;
+  if (n > 1000000) return Math.round(n / 10);
+  return Math.round(n);
+}
+
+function isValidRate(t) {
+  return t && t >= MIN_VALID_TOMAN && t <= MAX_VALID_TOMAN;
+}
+
 function applyUsdRate(toman, source) {
-  toman = Math.round(Number(toman));
-  if (!toman || toman < MIN_VALID_TOMAN) return false;
+  toman = parseToToman(toman);
+  if (!isValidRate(toman)) return false;
   usdRate = toman;
   localStorage.setItem('usd_free_rate', String(toman));
+  localStorage.setItem('usd_rate_source', source || '');
+  localStorage.setItem('usd_rate_time', new Date().toISOString());
   var el = document.getElementById('usdRateDisplay');
-  if (el) el.textContent = toman.toLocaleString('fa-IR') + ' تومان' + (source ? ' ('+source+')' : '');
+  if (el) {
+    var now = new Date();
+    var time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+    el.textContent = toman.toLocaleString('fa-IR') + ' تومان — ' + (source || 'بازار') + ' ' + time;
+  }
   return true;
 }
+
 function showInstantRate() {
   var cached = Number(localStorage.getItem('usd_free_rate') || 0);
-  if (cached >= MIN_VALID_TOMAN) applyUsdRate(cached, 'ذخیره');
-  else applyUsdRate(usdRate, 'پیش‌فرض');
+  var t = localStorage.getItem('usd_rate_time');
+  var age = t ? (Date.now() - new Date(t).getTime()) : 1e15;
+  if (isValidRate(cached) && age < 2 * 60 * 60 * 1000) {
+    applyUsdRate(cached, localStorage.getItem('usd_rate_source') || 'کش');
+  } else {
+    if (!isValidRate(cached)) {
+      localStorage.removeItem('usd_free_rate');
+      localStorage.removeItem('usd_rate_source');
+    }
+    applyUsdRate(usdRate >= MIN_VALID_TOMAN ? usdRate : 194500, 'برآورد');
+  }
 }
-function fetchUsdRate() {
-  showInstantRate();
-  var urls = [
-    'https://cdn.jsdelivr.net/gh/HosseinOdd/Navasan-API@main/data/fiat.json',
-    'https://raw.githubusercontent.com/HosseinOdd/Navasan-API/main/data/fiat.json'
-  ];
-  urls.forEach(function(url){
-    fetch(url, { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(data){
-      var v = data && data.usd && Number(data.usd.value);
-      if (v >= MIN_VALID_TOMAN) {
-        applyUsdRate(v, 'بازار');
-        showToast('نرخ دلار: ' + v.toLocaleString('fa-IR'));
-      }
-    }).catch(function(){});
+
+function fetchWithTimeout(url, ms) {
+  ms = ms || 10000;
+  var ctrl = new AbortController();
+  var timer = setTimeout(function(){ ctrl.abort(); }, ms);
+  return fetch(url, { cache: 'no-store', signal: ctrl.signal })
+    .then(function(res){
+      clearTimeout(timer);
+      if (!res.ok) throw new Error('http');
+      return res;
+    })
+    .catch(function(e){ clearTimeout(timer); throw e; });
+}
+
+function tryNavasan(url, label) {
+  return fetchWithTimeout(url, 8000).then(function(r){ return r.json(); }).then(function(data){
+    var v = data && data.usd && data.usd.value;
+    var t = parseToToman(v);
+    if (!isValidRate(t)) throw new Error('bad');
+    return { rate: t, source: label };
   });
 }
+
+function tryTgjuAjax(host) {
+  return fetchWithTimeout(host + '/ajax.json?t=' + Date.now(), 8000)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var p = data && data.current && data.current.price_dollar_rl && data.current.price_dollar_rl.p;
+      var t = parseToToman(p);
+      if (!isValidRate(t)) throw new Error('bad');
+      return { rate: t, source: 'tgju' };
+    });
+}
+
+function tryTgjuProxy() {
+  var target = encodeURIComponent('https://call5.tgju.org/ajax.json?t=' + Date.now());
+  return fetchWithTimeout('https://api.allorigins.win/raw?url=' + target, 12000)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var p = data && data.current && data.current.price_dollar_rl && data.current.price_dollar_rl.p;
+      var t = parseToToman(p);
+      if (!isValidRate(t)) throw new Error('bad');
+      return { rate: t, source: 'tgju' };
+    });
+}
+
+function tryTgjuHtml() {
+  var target = encodeURIComponent('https://www.tgju.org/profile/price_dollar_rl');
+  return fetchWithTimeout('https://api.allorigins.win/raw?url=' + target, 15000)
+    .then(function(r){ return r.text(); })
+    .then(function(html){
+      var m = html.match(/info-price[^>]*>\s*([0-9,۰-۹]+)/) ||
+              html.match(/data-price="(\d+)"/) ||
+              html.match(/>([0-9]{2,3},[0-9]{3},[0-9]{3})</);
+      if (!m) throw new Error('no price');
+      var t = parseToToman(m[1]);
+      if (!isValidRate(t)) throw new Error('bad');
+      return { rate: t, source: 'tgju.org' };
+    });
+}
+
+function median(nums) {
+  nums = nums.slice().sort(function(a,b){ return a-b; });
+  var m = Math.floor(nums.length / 2);
+  return nums.length % 2 ? nums[m] : Math.round((nums[m-1] + nums[m]) / 2);
+}
+
+function fetchUsdRate() {
+  if (rateFetching) return;
+  rateFetching = true;
+  showInstantRate();
+  var el = document.getElementById('usdRateDisplay');
+  if (el) el.style.opacity = '0.7';
+
+  var tasks = [
+    tryNavasan('https://cdn.jsdelivr.net/gh/HosseinOdd/Navasan-API@main/data/fiat.json', 'بازار آزاد'),
+    tryNavasan('https://raw.githubusercontent.com/HosseinOdd/Navasan-API/main/data/fiat.json', 'بازار آزاد'),
+    tryTgjuAjax('https://call5.tgju.org'),
+    tryTgjuAjax('https://call1.tgju.org'),
+    tryTgjuProxy(),
+    tryTgjuHtml()
+  ];
+
+  var rates = [];
+  var sources = [];
+  var pending = tasks.length;
+
+  function finish() {
+    rateFetching = false;
+    if (el) el.style.opacity = '1';
+    if (!rates.length) {
+      showToast('نرخ آنلاین در دسترس نیست — از آخرین نرخ استفاده شد');
+      return;
+    }
+    var finalRate = rates.length >= 2 ? median(rates) : rates[0];
+    var src = sources[0] || 'بازار';
+    if (applyUsdRate(finalRate, src)) {
+      showToast('نرخ دلار: ' + finalRate.toLocaleString('fa-IR') + ' تومان');
+    }
+  }
+
+  tasks.forEach(function(p){
+    p.then(function(r){
+      if (r && isValidRate(r.rate)) {
+        rates.push(r.rate);
+        sources.push(r.source);
+      }
+    }).catch(function(){}).then(function(){
+      pending--;
+      if (pending === 0) finish();
+    });
+  });
+
+  setTimeout(function(){
+    if (rateFetching) finish();
+  }, 18000);
+}
+
 var TARIFF = { default:0.12, amazon:0.15, shein:0.10, zara:0.12, lcw:0.10, boyner:0.12, koton:0.10, defacto:0.10, namshi:0.12, noon:0.12, trendyol:0.10 };
 function calculatePrice() {
   var priceEl = document.getElementById('calcPrice');
@@ -103,7 +242,7 @@ function calculatePrice() {
   document.getElementById('rTariff').textContent = formatPrice(tariff) + ' (' + Math.round(tariffRate*100) + '٪)';
   document.getElementById('rFee').textContent = formatPrice(fee);
   document.getElementById('rTotal').textContent = formatPrice(total);
-  document.getElementById('calcNote').textContent = 'محاسبه با نرخ ' + usdRate.toLocaleString('fa-IR') + ' تومان' + (link ? ' — لینک ثبت شد' : '');
+  document.getElementById('calcNote').textContent = 'محاسبه با نرخ لحظه‌ای ' + usdRate.toLocaleString('fa-IR') + ' تومان' + (link ? ' — لینک ثبت شد' : '');
   document.getElementById('calcResult').hidden = false;
 }
 function renderCheckoutSummary() {
