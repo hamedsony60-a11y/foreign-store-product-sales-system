@@ -1,0 +1,21 @@
+.checkout-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:start}
+@media(max-width:768px){.checkout-layout{grid-template-columns:1fr}}
+.checkout-items{margin-bottom:16px}
+.checkout-line{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.9rem}
+.checkout-total-row{display:flex;justify-content:space-between;font-size:1.1rem;font-weight:800;padding-top:12px;border-top:1px solid var(--border)}
+.pay-methods{display:flex;flex-direction:column;gap:10px}
+.pay-method{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);cursor:pointer;transition:all .2s}
+.pay-method.active,.pay-method:has(input:checked){border-color:var(--brand);background:var(--brand-light)}
+.pay-method input{margin-top:4px}
+.pay-method-body{display:flex;flex-direction:column;gap:2px}
+.pay-method-body strong{font-size:.95rem}
+.pay-method-body small{font-size:.8rem;color:var(--text-secondary)}
+.gateway-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:600;display:none;align-items:center;justify-content:center;padding:20px}
+.gateway-overlay.open{display:flex}
+.gateway-box{background:#fff;border-radius:20px;padding:32px 28px;max-width:400px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.2)}
+.gateway-logo{font-size:1.4rem;font-weight:800;color:var(--brand);margin-bottom:8px}
+.gateway-amount{color:var(--text-secondary);font-size:.9rem}
+.gateway-price{font-size:1.6rem;font-weight:800;margin:12px 0 16px}
+.gateway-hint{font-size:.8rem;color:var(--text-tertiary);line-height:1.6;margin-bottom:20px}
+.gateway-actions{display:flex;flex-direction:column;gap:10px}
+.btn-gateway-cancel{padding:12px;border-radius:var(--radius-pill);border:1px solid var(--border);background:var(--bg);font-weight:600;color:var(--text-secondary)}
