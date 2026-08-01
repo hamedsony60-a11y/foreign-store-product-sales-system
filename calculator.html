@@ -7,6 +7,39 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="ux.css" />
+  <style>
+    .multi-rates { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 4px; }
+    .rate-chip {
+      flex: 1; min-width: 100px;
+      background: var(--bg, #f5f5f7);
+      border-radius: 14px;
+      padding: 10px 14px;
+      border: 1px solid var(--border, #e5e5ea);
+      text-align: center;
+    }
+    .rate-chip span { display: block; font-size: 0.75rem; color: var(--text-secondary, #86868b); margin-bottom: 4px; }
+    .rate-chip strong { font-size: 0.95rem; font-weight: 700; }
+    .currency-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .currency-pills label {
+      flex: 1; min-width: 90px;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1.5px solid var(--border, #e5e5ea);
+      background: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+    .currency-pills input { accent-color: var(--brand, #0071e3); }
+    .currency-pills label:has(input:checked) {
+      border-color: var(--brand, #0071e3);
+      background: var(--brand-light, #e8f2ff);
+      color: var(--brand, #0071e3);
+    }
+  </style>
 </head>
 <body data-page="calculator">
   <header class="header">
@@ -22,7 +55,7 @@
           </button>
           <input type="text" class="search-input" id="headerSearch" placeholder="جستجوی محصول..." />
         </div>
-        <button class="icon-btn" type="button" onclick="openCart()" aria-label="سبد">
+        <button class="icon-btn" type="button" onclick="openCart()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
           <span class="cart-count" id="cartCount">0</span>
         </button>
@@ -34,10 +67,10 @@
   <main class="page-fade">
     <section class="section">
       <h1 class="section-title">سفارش از فروشگاه خارجی</h1>
-      <p class="section-sub">فروشگاه را انتخاب کنید، لینک کالا را بگذارید، قیمت نهایی را ببینید</p>
+      <p class="section-sub">ارز قیمت کالا را انتخاب کنید، لینک بگذارید، هزینه نهایی به تومان را ببینید</p>
 
       <div class="order-stores">
-        <p class="order-stores-label">فروشگاه‌های پشتیبانی‌شده (کلیک = سایت رسمی)</p>
+        <p class="order-stores-label">فروشگاه‌های پشتیبانی‌شده</p>
         <div class="stores-links">
           <a class="store-link" href="https://www.trendyol.com" target="_blank" rel="noopener">Trendyol</a>
           <a class="store-link" href="https://www.zara.com" target="_blank" rel="noopener">Zara</a>
@@ -53,12 +86,32 @@
       </div>
 
       <div class="calc-card" style="margin-top:24px">
-        <div class="calc-rate-bar">
-          <span>نرخ دلار (tgju.org):</span>
-          <strong id="usdRateDisplay">در حال دریافت...</strong>
-          <button type="button" class="calc-refresh" onclick="fetchUsdRate()" title="بروزرسانی از tgju.org">↻</button>
+        <div class="calc-rate-bar" style="flex-wrap:wrap">
+          <span>نرخ‌های لحظه‌ای:</span>
+          <button type="button" class="calc-refresh" onclick="fetchUsdRate()" title="بروزرسانی نرخ‌ها">↻</button>
         </div>
+        <div class="multi-rates" id="multiRates">
+          <div class="rate-chip"><span>دلار</span><strong id="rateUsd">—</strong></div>
+          <div class="rate-chip"><span>درهم</span><strong id="rateAed">—</strong></div>
+          <div class="rate-chip"><span>لیر</span><strong id="rateTry">—</strong></div>
+        </div>
+        <p class="calc-note" id="usdRateDisplay" style="margin-top:8px">در حال دریافت نرخ...</p>
+
         <div class="calc-form">
+          <div class="form-group">
+            <label>قیمت کالا بر چه ارزی است؟</label>
+            <div class="currency-pills">
+              <label><input type="radio" name="calcCurrencyRadio" value="usd" checked onchange="document.getElementById('calcCurrency').value=this.value;onCurrencyChange()" /> دلار</label>
+              <label><input type="radio" name="calcCurrencyRadio" value="aed" onchange="document.getElementById('calcCurrency').value=this.value;onCurrencyChange()" /> درهم</label>
+              <label><input type="radio" name="calcCurrencyRadio" value="try" onchange="document.getElementById('calcCurrency').value=this.value;onCurrencyChange()" /> لیر</label>
+            </div>
+            <select id="calcCurrency" hidden>
+              <option value="usd" selected>دلار</option>
+              <option value="aed">درهم</option>
+              <option value="try">لیر</option>
+            </select>
+          </div>
+
           <div class="form-group">
             <label for="calcStore">فروشگاه مبدا</label>
             <select id="calcStore">
@@ -74,13 +127,15 @@
               <option value="noon">Noon</option>
             </select>
           </div>
+
           <div class="form-group">
             <label for="calcLink">لینک محصول</label>
-            <input type="url" id="calcLink" placeholder="لینک کالا را از سایت فروشگاه بچسبانید..." />
+            <input type="url" id="calcLink" placeholder="لینک کالا را بچسبانید..." />
           </div>
+
           <div class="calc-row">
             <div class="form-group">
-              <label for="calcPrice">قیمت (دلار)</label>
+              <label for="calcPrice" id="calcPriceLabel">قیمت کالا (دلار)</label>
               <input type="number" id="calcPrice" min="0" step="0.01" placeholder="۴۹.۹۹" />
             </div>
             <div class="form-group">
@@ -88,10 +143,12 @@
               <input type="number" id="calcWeight" min="0" step="0.1" placeholder="۰.۵" />
             </div>
           </div>
+
           <button type="button" class="btn-primary calc-btn" onclick="calculatePrice()">محاسبه قیمت نهایی</button>
         </div>
+
         <div class="calc-result" id="calcResult" hidden>
-          <h3>جزئیات هزینه</h3>
+          <h3>جزئیات هزینه (تومان)</h3>
           <div class="calc-breakdown">
             <div class="calc-line"><span>قیمت کالا</span><strong id="rProduct">—</strong></div>
             <div class="calc-line"><span>حمل بین‌المللی</span><strong id="rShipping">—</strong></div>
@@ -110,7 +167,6 @@
   </main>
 
   <footer class="footer"></footer>
-
   <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
   <aside class="cart-drawer" id="cartDrawer">
     <div class="cart-header"><h3>سبد خرید</h3><button class="cart-close" type="button" onclick="closeCart()">×</button></div>
@@ -123,5 +179,49 @@
 
   <script src="products-data.js"></script>
   <script src="script.js"></script>
+  <script>
+    var CURRENCY_LABEL = { usd: 'دلار', aed: 'درهم', try: 'لیر' };
+    function onCurrencyChange() {
+      var c = document.getElementById('calcCurrency').value;
+      var lab = document.getElementById('calcPriceLabel');
+      if (lab) lab.textContent = 'قیمت کالا (' + (CURRENCY_LABEL[c] || c) + ')';
+      var inp = document.getElementById('calcPrice');
+      if (inp) inp.placeholder = c === 'try' ? 'مثلاً ۱۵۰۰' : (c === 'aed' ? 'مثلاً ۱۸۰' : '۴۹.۹۹');
+    }
+    // override calculatePrice to use selected currency rate
+    function calculatePrice() {
+      var priceEl = document.getElementById('calcPrice');
+      var weightEl = document.getElementById('calcWeight');
+      var storeEl = document.getElementById('calcStore');
+      if (!priceEl || !weightEl) return;
+      var price = parseFloat(priceEl.value);
+      var weight = parseFloat(weightEl.value);
+      var store = storeEl ? storeEl.value : 'zara';
+      var link = (document.getElementById('calcLink') || {}).value || '';
+      var currency = (document.getElementById('calcCurrency') || {}).value || 'usd';
+      if (!price || price <= 0) { showToast('قیمت کالا را وارد کنید'); return; }
+      if (!weight || weight <= 0) { showToast('وزن کالا را وارد کنید'); return; }
+
+      var rate = (window.rates && window.rates[currency]) || (currency === 'usd' ? usdRate : (currency === 'aed' ? 53000 : 4100));
+      var productToman = price * rate;
+      var shipping = 350000 + weight * 280000;
+      var TARIFF = { default:0.12, amazon:0.15, shein:0.10, zara:0.12, lcw:0.10, boyner:0.12, koton:0.10, defacto:0.10, namshi:0.12, noon:0.12, trendyol:0.10 };
+      var tariffRate = TARIFF[store] || TARIFF.default;
+      var tariff = productToman * tariffRate;
+      var fee = Math.max(productToman * 0.05, 150000);
+      var total = productToman + shipping + tariff + fee;
+
+      document.getElementById('rProduct').textContent = formatPrice(productToman);
+      document.getElementById('rShipping').textContent = formatPrice(shipping);
+      document.getElementById('rTariff').textContent = formatPrice(tariff) + ' (' + Math.round(tariffRate * 100) + '٪)';
+      document.getElementById('rFee').textContent = formatPrice(fee);
+      document.getElementById('rTotal').textContent = formatPrice(total);
+      document.getElementById('calcNote').textContent =
+        price + ' ' + (CURRENCY_LABEL[currency] || currency) +
+        ' × ' + rate.toLocaleString('fa-IR') + ' تومان' +
+        (link ? ' — لینک ثبت شد' : '');
+      document.getElementById('calcResult').hidden = false;
+    }
+  </script>
 </body>
 </html>
