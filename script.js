@@ -1,4 +1,4 @@
-/* load shop + nav + search */
+/* load shop + nav + search + fast rate */
 (function () {
   function loadSync(url) {
     var x = new XMLHttpRequest();
@@ -12,6 +12,7 @@
   }
   loadSync('shop1.js');
   loadSync('shop2.js');
+  loadSync('rate.js'); // overrides slow fetchUsdRate
   loadSync('nav.js');
   loadSync('search.js');
 })();
