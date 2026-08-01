@@ -1,39 +1,60 @@
-/* Site-wide 20-page navigation */
+/* Navigation — clean, usable, not link-spam */
 (function () {
   var MAIN = [
     ['index.html', 'خانه'],
     ['products.html', 'محصولات'],
-    ['collections.html', 'مجموعه‌ها'],
-    ['stores.html', 'فروشگاه‌ها'],
-    ['calculator.html', 'محاسبه قیمت'],
-    ['contact.html', 'تماس']
+    ['calculator.html', 'سفارش'],
+    ['account.html', 'حساب من'],
+    ['support.html', 'پشتیبانی']
   ];
-  var ALL = [
-    ['index.html', 'خانه'],
-    ['products.html', 'محصولات'],
-    ['collections.html', 'مجموعه‌ها'],
-    ['contact.html', 'تماس'],
-    ['about.html', 'درباره ما'],
-    ['how-it-works.html', 'نحوه سفارش'],
-    ['shipping.html', 'ارسال'],
-    ['calculator.html', 'محاسبه قیمت'],
-    ['faq.html', 'سوالات متداول'],
-    ['terms.html', 'قوانین'],
-    ['privacy.html', 'حریم خصوصی'],
-    ['stores.html', 'فروشگاه‌ها'],
-    ['track-order.html', 'پیگیری سفارش'],
-    ['payment.html', 'پرداخت'],
-    ['offers.html', 'تخفیف‌ها'],
-    ['support.html', 'پشتیبانی'],
-    ['blog.html', 'بلاگ'],
-    ['account.html', 'حساب کاربری'],
-    ['checkout.html', 'تسویه حساب'],
-    ['brands.html', 'برندها']
+
+  var FOOTER_GROUPS = [
+    {
+      title: 'فروشگاه',
+      links: [
+        ['index.html', 'خانه'],
+        ['products.html', 'محصولات'],
+        ['collections.html', 'مجموعه‌ها'],
+        ['brands.html', 'برندها'],
+        ['offers.html', 'تخفیف‌ها']
+      ]
+    },
+    {
+      title: 'سفارش',
+      links: [
+        ['calculator.html', 'سفارش از لینک'],
+        ['how-it-works.html', 'نحوه کار'],
+        ['shipping.html', 'ارسال'],
+        ['track-order.html', 'پیگیری'],
+        ['checkout.html', 'تسویه حساب']
+      ]
+    },
+    {
+      title: 'راهنما',
+      links: [
+        ['faq.html', 'سوالات متداول'],
+        ['support.html', 'پشتیبانی'],
+        ['contact.html', 'تماس'],
+        ['about.html', 'درباره ما'],
+        ['blog.html', 'بلاگ']
+      ]
+    },
+    {
+      title: 'قوانین',
+      links: [
+        ['terms.html', 'قوانین'],
+        ['privacy.html', 'حریم خصوصی'],
+        ['payment.html', 'پرداخت'],
+        ['account.html', 'حساب کاربری']
+      ]
+    }
   ];
 
   function currentFile() {
     var p = (location.pathname || '').split('/').pop() || 'index.html';
-    if (!p || p === '') p = 'index.html';
+    if (!p) p = 'index.html';
+    // treat stores as calculator (merged)
+    if (p === 'stores.html') p = 'calculator.html';
     return p;
   }
 
@@ -42,7 +63,8 @@
     if (!nav) return;
     var cur = currentFile();
     nav.innerHTML = MAIN.map(function (item) {
-      var cls = item[0] === cur ? ' class="active"' : '';
+      var active = item[0] === cur || (item[0] === 'calculator.html' && cur === 'calculator.html');
+      var cls = active ? ' class="active"' : '';
       return '<a href="' + item[0] + '"' + cls + '>' + item[1] + '</a>';
     }).join('');
   }
@@ -50,12 +72,16 @@
   function enhanceFooter() {
     var footer = document.querySelector('.footer');
     if (!footer) return;
-    var links = ALL.map(function (item) {
-      return '<a href="' + item[0] + '">' + item[1] + '</a>';
-    }).join('');
-    footer.innerHTML =
-      '<div class="footer-links">' + links + '</div>' +
-      '<p>© ۱۴۰۵ فروشگاه · خرید از فروشگاه‌های خارجی · ۲۰ صفحه فعال</p>';
+    var html = '<div class="footer-grid">';
+    FOOTER_GROUPS.forEach(function (g) {
+      html += '<div class="footer-col"><h4>' + g.title + '</h4>';
+      g.links.forEach(function (item) {
+        html += '<a href="' + item[0] + '">' + item[1] + '</a>';
+      });
+      html += '</div>';
+    });
+    html += '</div><p class="footer-copy">© ۱۴۰۵ فروشگاه · خرید از فروشگاه‌های خارجی</p>';
+    footer.innerHTML = html;
   }
 
   function run() {
