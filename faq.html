@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>فروشگاه | سوالات متداول</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="content">
+  <header class="header"><div class="header-inner"><div class="header-right"><a href="index.html" class="logo">فروش<span>گاه</span></a>
+  <nav class="nav" id="mainNav"><a href="index.html">خانه</a><a href="products.html">محصولات</a><a href="collections.html">مجموعه‌ها</a><a href="stores.html">فروشگاه‌ها</a><a href="calculator.html">محاسبه قیمت</a><a href="contact.html">تماس</a></nav></div>
+  <div class="header-left"><button class="icon-btn" onclick="openCart()"><span class="cart-count" id="cartCount">0</span></button><button class="menu-toggle icon-btn" onclick="toggleMenu()">☰</button></div></div></header>
+  <main class="page-fade"><section class="section content-page">
+    <h1 class="section-title">سوالات متداول</h1>
+    <div class="faq-list">
+      <details class="faq-item"><summary>چطور سفارش ثبت کنم؟</summary><p>لینک محصول را در محاسبه‌گر وارد کنید و پس از دیدن قیمت نهایی سفارش را ثبت کنید.</p></details>
+      <details class="faq-item"><summary>نرخ دلار از کجا می‌آید؟</summary><p>نرخ دلار آزاد لحظه‌ای از منابع بازار دریافت می‌شود.</p></details>
+      <details class="faq-item"><summary>آیا کالا اصل است؟</summary><p>بله؛ خرید مستقیم از فروشگاه رسمی مبدا انجام می‌شود.</p></details>
+      <details class="faq-item"><summary>زمان رسیدن سفارش؟</summary><p>معمولاً ۱۰ تا ۳۵ روز کاری بسته به کشور مبدا.</p></details>
+      <details class="faq-item"><summary>مرجوعی؟</summary><p>طبق قوانین فروشگاه مبدا و شرایط گمرکی بررسی می‌شود.</p></details>
+    </div>
+  </section></main>
+  <footer class="footer"><p>© ۱۴۰۵ فروشگاه</p></footer>
+  <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+  <aside class="cart-drawer" id="cartDrawer"><div class="cart-header"><h3>سبد</h3><button class="cart-close" onclick="closeCart()">×</button></div><div class="cart-total-bar"><div class="cart-total-row" id="cartTotalRow"><span class="cart-total-label">جمع</span><span class="cart-total-price" id="cartTotal">۰</span></div><button class="btn-checkout" onclick="location.href='checkout.html'">پرداخت</button></div><div class="cart-items" id="cartItems"></div></aside>
+  <script src="products-data.js"></script><script src="script.js"></script>
+</body></html>
