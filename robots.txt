@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hamedsony60-a11y.github.io/foreign-store-product-sales-system/sitemap.xml
