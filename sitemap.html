@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>فروشگاه | نقشه سایت — ۲۰ صفحه</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="content">
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-right">
+        <a href="index.html" class="logo">فروش<span>گاه</span></a>
+        <nav class="nav" id="mainNav"></nav>
+      </div>
+      <div class="header-left">
+        <button class="icon-btn" type="button" onclick="openCart()"><span class="cart-count" id="cartCount">0</span></button>
+        <button class="menu-toggle icon-btn" type="button" onclick="toggleMenu()">☰</button>
+      </div>
+    </div>
+  </header>
+  <main class="page-fade">
+    <section class="section content-page">
+      <h1 class="section-title">نقشه سایت — ۲۰ صفحه فعال</h1>
+      <p class="section-sub">همه صفحات فروشگاه</p>
+      <div class="steps-grid" id="mapGrid">
+        <a class="step-card" href="index.html"><h3>۱. خانه</h3><p>index.html</p></a>
+        <a class="step-card" href="products.html"><h3>۲. محصولات</h3><p>products.html</p></a>
+        <a class="step-card" href="collections.html"><h3>۳. مجموعه‌ها</h3><p>collections.html</p></a>
+        <a class="step-card" href="contact.html"><h3>۴. تماس</h3><p>contact.html</p></a>
+        <a class="step-card" href="about.html"><h3>۵. درباره ما</h3><p>about.html</p></a>
+        <a class="step-card" href="how-it-works.html"><h3>۶. نحوه سفارش</h3><p>how-it-works.html</p></a>
+        <a class="step-card" href="shipping.html"><h3>۷. ارسال</h3><p>shipping.html</p></a>
+        <a class="step-card" href="calculator.html"><h3>۸. محاسبه قیمت</h3><p>calculator.html</p></a>
+        <a class="step-card" href="faq.html"><h3>۹. سوالات متداول</h3><p>faq.html</p></a>
+        <a class="step-card" href="terms.html"><h3>۱۰. قوانین</h3><p>terms.html</p></a>
+        <a class="step-card" href="privacy.html"><h3>۱۱. حریم خصوصی</h3><p>privacy.html</p></a>
+        <a class="step-card" href="stores.html"><h3>۱۲. فروشگاه‌ها</h3><p>stores.html</p></a>
+        <a class="step-card" href="track-order.html"><h3>۱۳. پیگیری سفارش</h3><p>track-order.html</p></a>
+        <a class="step-card" href="payment.html"><h3>۱۴. پرداخت</h3><p>payment.html</p></a>
+        <a class="step-card" href="offers.html"><h3>۱۵. تخفیف‌ها</h3><p>offers.html</p></a>
+        <a class="step-card" href="support.html"><h3>۱۶. پشتیبانی</h3><p>support.html</p></a>
+        <a class="step-card" href="blog.html"><h3>۱۷. بلاگ</h3><p>blog.html</p></a>
+        <a class="step-card" href="account.html"><h3>۱۸. حساب کاربری</h3><p>account.html</p></a>
+        <a class="step-card" href="checkout.html"><h3>۱۹. تسویه حساب</h3><p>checkout.html</p></a>
+        <a class="step-card" href="brands.html"><h3>۲۰. برندها</h3><p>brands.html</p></a>
+      </div>
+    </section>
+  </main>
+  <footer class="footer"></footer>
+  <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-header"><h3>سبد</h3><button class="cart-close" onclick="closeCart()">×</button></div>
+    <div class="cart-total-bar"><div class="cart-total-row" id="cartTotalRow"><span class="cart-total-label">جمع</span><span class="cart-total-price" id="cartTotal">۰</span></div>
+    <button class="btn-checkout" onclick="location.href='checkout.html'">پرداخت</button></div>
+    <div class="cart-items" id="cartItems"></div>
+  </aside>
+  <script src="products-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

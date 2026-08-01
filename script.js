@@ -1,4 +1,4 @@
-/* load complete shop locally */
+/* load complete shop locally + 20-page nav */
 (function(){
   function loadSync(url){
     var x=new XMLHttpRequest();
@@ -9,4 +9,5 @@
   }
   loadSync('shop1.js');
   loadSync('shop2.js');
+  loadSync('nav.js');
 })();
