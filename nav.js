@@ -1,5 +1,14 @@
-/* Navigation — clean, usable, not link-spam */
+/* Navigation — clean, usable */
 (function () {
+  // inject UX css once
+  if (!document.getElementById('ux-css')) {
+    var l = document.createElement('link');
+    l.id = 'ux-css';
+    l.rel = 'stylesheet';
+    l.href = 'ux.css';
+    document.head.appendChild(l);
+  }
+
   var MAIN = [
     ['index.html', 'خانه'],
     ['products.html', 'محصولات'],
@@ -53,7 +62,6 @@
   function currentFile() {
     var p = (location.pathname || '').split('/').pop() || 'index.html';
     if (!p) p = 'index.html';
-    // treat stores as calculator (merged)
     if (p === 'stores.html') p = 'calculator.html';
     return p;
   }
@@ -63,8 +71,7 @@
     if (!nav) return;
     var cur = currentFile();
     nav.innerHTML = MAIN.map(function (item) {
-      var active = item[0] === cur || (item[0] === 'calculator.html' && cur === 'calculator.html');
-      var cls = active ? ' class="active"' : '';
+      var cls = item[0] === cur ? ' class="active"' : '';
       return '<a href="' + item[0] + '"' + cls + '>' + item[1] + '</a>';
     }).join('');
   }
